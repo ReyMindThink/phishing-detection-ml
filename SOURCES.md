@@ -40,9 +40,37 @@ Konsekuensi: email mentah tidak di-commit ke repo.
 - Sebagian header dikaburkan penyusun (alamat dan hostname).
 - Penyusun melarang mengirim email korpus ke sistem email sungguhan.
 
-## 2. Phishing: Nazario corpus
+## 2. MeAJOR (Merged email Assets from Joint Open-source Repositories)
 
-(belum diverifikasi)
+- **URL halaman:** https://zenodo.org/records/18471483
+- **DOI:** 10.5281/zenodo.18471483 (Versi 2.0, Februari 2026)
+- **Penyusun:** Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (GECAD, ISEP, Politeknik Porto)
+- **Tanggal unduh:** 2026-10-12
+- **Lisensi:** Creative Commons Attribution 4.0 International (CC BY 4.0). Wajib mencantumkan atribusi.
+- **Peran dalam proyek:** kandidat sumber phishing (dan pembanding ham/spam). Belum diputuskan baris mana yang dipakai.
+
+### Sitasi
+
+Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Merged email Assets from Joint Open-source Repositories (Version 2.0) [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.18471483
+
+### File
+
+| File                                     | Ukuran (byte) | MD5 (cocok dengan Zenodo)        | SHA-256                                                          |
+| ---------------------------------------- | ------------- | -------------------------------- | ---------------------------------------------------------------- |
+| meajor_cleaned_preprocessed.parquet.gzip | 86278230      | 78e397ad8447bcdba5a98097921ba8bd | 5a9de6c207634f068928ed0cc68d78ee2fd594ed9a587daf4048974c95715c1a |
+
+### Isi menurut halaman Zenodo (klaim penyusun, belum diverifikasi)
+
+- 108685 sampel; label 0 = benign, 1 = phishing (tidak ada kelas spam).
+- Gabungan dari: TREC-05, TREC-06, TREC-07, Nazario Phishing Corpus, Nigerian Fraud.
+- Teks dianonimkan dengan token seperti [URL], [EMAIL_ADDRESS], [NAME]; ada kolom sumber dan fitur hasil ekstraksi.
+
+### Catatan bias dan risiko (hipotesis, diuji di tahap berikutnya)
+
+- Label 1 kemungkinan mencampur spam dan penipuan (Nigerian Fraud), padahal definisi proyek: spam bukan phishing.
+- Header mentah dan URL asli hilang (dianonimkan), sehingga fitur header/URL mentah tidak sebanding dengan SpamAssassin.
+- Kemungkinan tumpang tindih dengan korpus era yang sama (misalnya TREC vs SpamAssassin). Dicek dengan hash isi.
+- Nazario berasal dari kotak masuk pribadi satu orang, bukan sampel acak dunia nyata (dari hasil pencarian, belum diverifikasi ke sumber asli).
 
 ## 3. Phishing: dataset Kaggle
 
