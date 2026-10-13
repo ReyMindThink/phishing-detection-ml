@@ -72,6 +72,42 @@ Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Me
 - Kemungkinan tumpang tindih dengan korpus era yang sama (misalnya TREC vs SpamAssassin). Dicek dengan hash isi.
 - Nazario berasal dari kotak masuk pribadi satu orang, bukan sampel acak dunia nyata (dari hasil pencarian, belum diverifikasi ke sumber asli).
 
-## 3. Phishing: dataset Kaggle
+## 3. Nazario Phishing Corpus
 
-(belum diverifikasi)
+- **URL halaman:** https://monkey.org/~jose/phishing/
+- **Penyusun:** José Nazario (koleksi dari inbox pribadi, diklasifikasi manual)
+- **Tanggal akses:** 2026-10-13
+- **Lisensi:** CC BY 4.0 (menurut README.txt penyusun). Wajib atribusi.
+- **Peran dalam proyek:** kelas phishing (set klasik)
+
+### File yang dipakai
+
+phishing0.mbox, phishing1.mbox, phishing2.mbox, phishing3.mbox, 20051114.mbox.
+Tidak dipakai: private-phishing4.mbox (tidak dijelaskan di README) dan file modern phishing-2015 s.d. 2025 (dicadangkan sebagai uji generalisasi terpisah, belum diunduh).
+
+### Cara pengambilan (penting untuk keamanan)
+
+File mbox TIDAK disimpan di Windows. Antivirus (Windows Defender) menandai unduhan browser
+karena berisi lampiran malware sungguhan (Mydoom, Mytob, Hupigon, Vigorf) di phishing1/phishing2,
+bertentangan dengan klaim README bahwa file "seharusnya tidak berisi malware".
+Pipeline: src/extract_nazario.py berjalan di dalam container Docker, mengunduh ke memori,
+membuang lampiran dan HTML, lalu hanya mengeluarkan CSV teks bersih.
+
+### Hasil ekstraksi (diverifikasi 2026-10-13)
+
+| File      | Email                                         |
+| --------- | --------------------------------------------- |
+| phishing0 | 414                                           |
+| phishing1 | 456                                           |
+| phishing2 | 1423                                          |
+| phishing3 | 2279                                          |
+| 20051114  | 438                                           |
+| Total     | 5010 (3379 unik berdasarkan hash teks persis) |
+
+### Catatan bias dan risiko
+
+- Inbox pribadi satu orang: representatif, bukan sampel acak.
+- Dilabel manual, mungkin ada kesalahan (menurut README).
+- Banyak duplikat (1631) dan tumpang tindih antar file (339 hash).
+- Hampir semua email berformat HTML, berbeda dari ham SpamAssassin (risiko jalan pintas format).
+- URL di atribut href belum terambil oleh parser versi ini.
