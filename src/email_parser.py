@@ -75,3 +75,44 @@ def parse_pesan(msg: Message) -> dict:
         "urls_defanged": [defang(u) for u in urls],
         "n_attachments": lampiran,
     }
+
+def ekstrak_metadata(msg: Message) -> dict:
+    """Metadata BENTUK email (angka/kategori). Tanpa isi, tanpa decode lampiran.
+
+    Dipakai untuk mendeteksi jalan pintas dataset (Tahap 6), bukan otomatis
+    menjadi fitur model.
+    """
+    nama = [k.lower() for k in msg.keys()]
+    html_bytes = 0
+    plain_bytes = 0
+    charset = ""
+    n_bagian = 0
+    for part in msg.walk():
+        if part.is_multipart() or part.get_filename():
+            continue
+        n_bagian += 1
+        tipe = part.get_content_type()
+        if tipe not in ("text/plain", "text/html"):
+            continue
+        payload = part.get_payload(decode=True) or b""
+        if tipe == "text/html":
+            html_bytes += len(payload)
+        else:
+            plain_bytes += len(payload)
+        if not charset:
+            charset = (part.get_content_charset() or "").lower()
+    return {
+        "n_headers": len(nama),
+        "n_received": nama.count("received"),
+        "has_list_header": any(n.startswith("list-") for n in nama),
+        "has_mailman": "x-mailman-version" in nama,
+        "has_message_id": "message-id" in nama,
+        "has_x_mailer": "x-mailer" in nama,
+        "content_type": msg.get_content_type(),
+        "charset": charset,
+        "n_parts": n_bagian,
+        "has_html": html_bytes > 0,
+        "has_plain": plain_bytes > 0,
+        "html_bytes": html_bytes,
+        "plain_bytes": plain_bytes,
+    }
