@@ -1,6 +1,6 @@
 from email import message_from_string
 
-from src.email_parser import defang, ekstrak_metadata, parse_pesan
+from src.email_parser import defang, domain_pengirim, ekstrak_metadata, parse_pesan
 
 CONTOH = (
     "Subject: [CONTOH FIKTIF] Verifikasi akun\n"
@@ -48,3 +48,14 @@ def test_metadata_html_tanpa_header_list():
     assert m["has_html"] is True
     assert m["has_list_header"] is False
     assert m["html_bytes"] == 11
+
+def test_domain_pengirim():
+    pesan = message_from_string(
+        "From: Contoh Fiktif <Seseorang@Example.COM>\n"
+        "Subject: x\n\nhalo"
+    )
+    assert domain_pengirim(pesan) == "example.com"
+
+def test_domain_pengirim_kosong_atau_rusak():
+    assert domain_pengirim(message_from_string("Subject: x\n\nhalo")) == ""
+    assert domain_pengirim(message_from_string("From: tanpa-alamat\n\nhalo")) == ""

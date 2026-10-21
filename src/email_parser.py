@@ -5,6 +5,7 @@ Output hanya string dan angka.
 """
 import re
 from email.message import Message
+from email.utils import parseaddr
 from html.parser import HTMLParser
 
 URL_RE = re.compile(r"https?://[^\s<>\"')]+", re.IGNORECASE)
@@ -116,3 +117,13 @@ def ekstrak_metadata(msg: Message) -> dict:
         "html_bytes": html_bytes,
         "plain_bytes": plain_bytes,
     }
+
+def domain_pengirim(msg: Message) -> str:
+    """Hanya DOMAIN dari header From (huruf kecil). Alamat lengkap tidak disimpan.
+    Dipakai untuk pengelompokan split (cegah kebocoran pengirim), BUKAN sebagai
+    fitur model.
+    """
+    alamat = parseaddr(str(msg.get("From", "")))[1]
+    if "@" not in alamat:
+        return ""
+    return alamat.rsplit("@", 1)[1].strip().lower().rstrip(">.")
