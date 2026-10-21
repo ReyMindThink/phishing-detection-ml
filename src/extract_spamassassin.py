@@ -8,7 +8,7 @@ import re
 from email import message_from_binary_file, message_from_string
 from pathlib import Path
 
-from src.email_parser import ekstrak_metadata, parse_pesan
+from src.email_parser import domain_pengirim, ekstrak_metadata, parse_pesan
 
 ROOT = Path("data/interim/spamassassin")
 POLA = re.compile(r"^[0-9]{5}\.[0-9a-f]{32}$")
@@ -17,7 +17,7 @@ LABEL = {"easy_ham": "ham", "easy_ham_2": "ham", "hard_ham": "ham",
 KOLOM_META = list(ekstrak_metadata(message_from_string("")).keys())
 KOLOM = ["source_file", "subject", "body_text", "n_urls",
          "urls_defanged", "n_attachments", "content_hash",
-         "label", "subset"] + KOLOM_META
+         "label", "subset", "sender_domain"] + KOLOM_META
 
 ringkasan = {}
 OUT = ROOT / "spamassassin_clean.csv"
@@ -34,6 +34,7 @@ with open(OUT, "w", newline="", encoding="utf-8") as out:
                     msg = message_from_binary_file(f)
                 h = parse_pesan(msg)
                 m = ekstrak_metadata(msg)
+                dom = domain_pengirim(msg)
             except Exception:
                 n_gagal += 1
                 continue
@@ -48,6 +49,7 @@ with open(OUT, "w", newline="", encoding="utf-8") as out:
                 "content_hash": hashlib.sha256(kunci).hexdigest(),
                 "label": label,
                 "subset": subset,
+                "sender_domain": dom,
                 **m,
             })
             n_ok += 1
