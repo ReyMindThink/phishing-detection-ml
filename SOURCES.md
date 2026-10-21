@@ -47,7 +47,8 @@ Konsekuensi: email mentah tidak di-commit ke repo.
 - **Penyusun:** Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (GECAD, ISEP, Politeknik Porto)
 - **Tanggal unduh:** 2026-10-12
 - **Lisensi:** Creative Commons Attribution 4.0 International (CC BY 4.0). Wajib mencantumkan atribusi.
-- **Peran dalam proyek:** kandidat sumber phishing (dan pembanding ham/spam). Belum diputuskan baris mana yang dipakai.
+- **Peran dalam proyek:** HANYA uji eksternal false positive (ham/spam asing), tidak dipakai untuk latih. Diputuskan di Tahap 3.
+- **Temuan verifikasi:** kolom source hanya berisi trec5/trec6/trec7 (tidak ada Nazario), dan label 1 setara spam TREC. Jadi tidak ada phishing menurut definisi proyek, dan recall tidak bisa diukur dengan data ini. Duplikat terhadap SpamAssassin harus dicek sebelum dipakai.
 
 ### Sitasi
 
