@@ -13,14 +13,14 @@ import urllib.request
 from email import message_from_string
 
 sys.path.insert(0, "/app")
-from src.email_parser import ekstrak_metadata, parse_pesan  # noqa: E402
+from src.email_parser import domain_pengirim, ekstrak_metadata, parse_pesan  # noqa: E402
 
 BASE = "https://monkey.org/~jose/phishing/"
 FILES = ["phishing0.mbox", "phishing1.mbox", "phishing2.mbox",
          "phishing3.mbox", "20051114.mbox"]
 KOLOM_META = list(ekstrak_metadata(message_from_string("")).keys())
 KOLOM = ["source_file", "subject", "body_text", "n_urls",
-         "urls_defanged", "n_attachments", "content_hash"] + KOLOM_META
+         "urls_defanged", "n_attachments", "content_hash", "sender_domain"] + KOLOM_META
 
 ringkasan = {}
 with open("/out/nazario_clean.csv", "w", newline="", encoding="utf-8") as out:
@@ -37,6 +37,7 @@ with open("/out/nazario_clean.csv", "w", newline="", encoding="utf-8") as out:
                 try:
                     h = parse_pesan(msg)
                     m = ekstrak_metadata(msg)
+                    dom = domain_pengirim(msg)
                 except Exception:
                     n_gagal += 1
                     continue
@@ -49,6 +50,7 @@ with open("/out/nazario_clean.csv", "w", newline="", encoding="utf-8") as out:
                     "urls_defanged": " ".join(h["urls_defanged"]),
                     "n_attachments": h["n_attachments"],
                     "content_hash": hashlib.sha256(kunci).hexdigest(),
+                    "sender_domain": dom,
                     **m,
                 })
                 n_ok += 1
