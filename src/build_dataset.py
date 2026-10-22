@@ -22,7 +22,8 @@ nz["subset"] = nz["source_file"]
 nz["source"] = "nazario"
 
 kolom = ["source", "subset", "source_file", "label", "subject", "body_text",
-         "n_urls", "urls_defanged", "n_attachments", "content_hash"] + META
+         "n_urls", "urls_defanged", "n_attachments", "content_hash",
+         "sender_domain"] + META
 df = pd.concat([sa[kolom], nz[kolom]], ignore_index=True)
 df.to_csv(OUT, index=False)
 

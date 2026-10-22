@@ -28,3 +28,6 @@ models/*
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Dump kode untuk dibagikan ke chat (bukan bagian repo)
+semua_code.txt
