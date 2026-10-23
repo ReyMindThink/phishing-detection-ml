@@ -8,16 +8,17 @@ import re
 from email import message_from_binary_file, message_from_string
 from pathlib import Path
 
-from src.email_parser import domain_pengirim, ekstrak_metadata, parse_pesan
+from src.email_parser import domain_pengirim, ekstrak_metadata, fitur_link, nama_header, parse_pesan
 
 ROOT = Path("data/interim/spamassassin")
 POLA = re.compile(r"^[0-9]{5}\.[0-9a-f]{32}$")
 LABEL = {"easy_ham": "ham", "easy_ham_2": "ham", "hard_ham": "ham",
          "spam": "spam", "spam_2": "spam"}
 KOLOM_META = list(ekstrak_metadata(message_from_string("")).keys())
+KOLOM_LINK = list(fitur_link(message_from_string("")).keys())
 KOLOM = ["source_file", "subject", "body_text", "n_urls",
          "urls_defanged", "n_attachments", "content_hash",
-         "label", "subset", "sender_domain"] + KOLOM_META
+         "label", "subset", "sender_domain"] + KOLOM_META + KOLOM_LINK + ["header_names"]
 
 ringkasan = {}
 OUT = ROOT / "spamassassin_clean.csv"
@@ -35,6 +36,8 @@ with open(OUT, "w", newline="", encoding="utf-8") as out:
                 h = parse_pesan(msg)
                 m = ekstrak_metadata(msg)
                 dom = domain_pengirim(msg)
+                lk = fitur_link(msg)
+                hn = nama_header(msg)
             except Exception:
                 n_gagal += 1
                 continue
@@ -51,6 +54,8 @@ with open(OUT, "w", newline="", encoding="utf-8") as out:
                 "subset": subset,
                 "sender_domain": dom,
                 **m,
+                **lk,
+                "header_names": hn,
             })
             n_ok += 1
         ringkasan[subset] = (n_ok, n_gagal)
