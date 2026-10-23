@@ -7,6 +7,7 @@ import re
 from email.message import Message
 from email.utils import parseaddr
 from html.parser import HTMLParser
+from urllib.parse import urlsplit
 
 URL_RE = re.compile(r"https?://[^\s<>\"')]+", re.IGNORECASE)
 
@@ -127,3 +128,140 @@ def domain_pengirim(msg: Message) -> str:
     if "@" not in alamat:
         return ""
     return alamat.rsplit("@", 1)[1].strip().lower().rstrip(">.")
+
+# ---------------------------------------------------------------------------
+# Fitur link (Tahap 5). Satu fungsi yang SAMA untuk semua kelas.
+# Hanya string dan angka; tidak merender HTML dan tidak membuka link.
+# ---------------------------------------------------------------------------
+HOST_IP_RE = re.compile(r"^\d{1,3}(\.\d{1,3}){3}$")
+TEKS_DOMAIN_RE = re.compile(
+    r"^(?:https?://)?((?:[a-z0-9-]+\.)+[a-z]{2,})(?:[/:?#]|$)", re.IGNORECASE)
+
+
+class _LinkDariHtml(HTMLParser):
+    """Kumpulkan (href, teks_tampil) tiap <a>, plus jumlah <img> dan <form>."""
+
+    def __init__(self):
+        super().__init__()
+        self.anchor = []
+        self.n_images = 0
+        self.n_forms = 0
+        self._href = None
+        self._teks = []
+        self._abaikan = 0
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag in ("script", "style"):
+            self._abaikan += 1
+        elif tag == "a" and a.get("href"):
+            self._tutup()
+            self._href = a["href"].strip()
+            self._teks = []
+        elif tag == "img":
+            self.n_images += 1
+        elif tag == "form":
+            self.n_forms += 1
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style") and self._abaikan:
+            self._abaikan -= 1
+        elif tag == "a":
+            self._tutup()
+
+    def handle_data(self, data):
+        if self._href is not None and not self._abaikan:
+            self._teks.append(data)
+
+    def close(self):
+        super().close()
+        self._tutup()
+
+    def _tutup(self):
+        if self._href is not None:
+            self.anchor.append((self._href, " ".join(" ".join(self._teks).split())))
+        self._href = None
+        self._teks = []
+
+
+def _baca_bagian(part: Message):
+    """Decode satu bagian text/*. (Mirip ambil_teks; sengaja tidak diubah agar
+    data lama tetap sama. Bisa digabung nanti.)"""
+    payload = part.get_payload(decode=True)
+    if payload is None:
+        return None
+    charset = part.get_content_charset() or "utf-8"
+    try:
+        return payload.decode(charset, errors="replace")
+    except LookupError:
+        return payload.decode("utf-8", errors="replace")
+
+
+def _info_url(url: str):
+    """(host, ada_userinfo) untuk URL http(s) absolut; selain itu None."""
+    try:
+        bagian = urlsplit(url)
+        host = (bagian.hostname or "").rstrip(".")
+    except ValueError:
+        return None
+    if bagian.scheme.lower() not in ("http", "https") or not host:
+        return None
+    return host, "@" in bagian.netloc
+
+
+def _sama_domain(a: str, b: str) -> bool:
+    a, b = a.removeprefix("www."), b.removeprefix("www.")
+    return a == b or a.endswith("." + b) or b.endswith("." + a)
+
+
+def fitur_link(msg: Message) -> dict:
+    """Angka tentang link di email. Domain disimpan defanged, tanpa path."""
+    anchors, urls = [], []
+    n_img = n_form = 0
+    for part in msg.walk():
+        if part.get_filename():
+            continue
+        tipe = part.get_content_type()
+        if tipe not in ("text/plain", "text/html"):
+            continue
+        teks = _baca_bagian(part)
+        if teks is None:
+            continue
+        if tipe == "text/html":
+            p = _LinkDariHtml()
+            p.feed(teks)
+            p.close()
+            anchors += p.anchor
+            urls += [href for href, _ in p.anchor]
+            n_img += p.n_images
+            n_form += p.n_forms
+        else:
+            urls += URL_RE.findall(teks)
+
+    info = {}                                  # url unik -> (host, userinfo)
+    for u in dict.fromkeys(urls):
+        hasil = _info_url(u)
+        if hasil:
+            info[u] = hasil
+    hosts = [h for h, _ in info.values()]
+
+    n_mismatch = 0
+    for href, tampil in anchors:
+        tujuan = _info_url(href)
+        m = TEKS_DOMAIN_RE.match(tampil)
+        if tujuan and m and not _sama_domain(m.group(1).lower(), tujuan[0]):
+            n_mismatch += 1
+
+    return {
+        "n_links": len(info),
+        "n_link_domains": len(set(hosts)),
+        "domains_link_defanged": " ".join(dict.fromkeys(h.replace(".", "[.]") for h in hosts)),
+        "n_link_mismatch": n_mismatch,
+        "n_link_ip": sum(1 for h in hosts if HOST_IP_RE.match(h)),
+        "n_link_userinfo": sum(1 for _, ada in info.values() if ada),
+        "n_link_punycode": sum(1 for h in hosts if "xn--" in h),
+        "max_url_len": max((len(u) for u in info), default=0),
+        "max_host_labels": max((h.count(".") + 1 for h in hosts), default=0),
+        "n_images": n_img,
+        "n_forms": n_form,
+    }

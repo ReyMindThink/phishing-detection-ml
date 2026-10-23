@@ -1,6 +1,6 @@
 from email import message_from_string
 
-from src.email_parser import defang, domain_pengirim, ekstrak_metadata, parse_pesan
+from src.email_parser import defang, domain_pengirim, ekstrak_metadata, fitur_link, parse_pesan
 
 CONTOH = (
     "Subject: [CONTOH FIKTIF] Verifikasi akun\n"
@@ -59,3 +59,68 @@ def test_domain_pengirim():
 def test_domain_pengirim_kosong_atau_rusak():
     assert domain_pengirim(message_from_string("Subject: x\n\nhalo")) == ""
     assert domain_pengirim(message_from_string("From: tanpa-alamat\n\nhalo")) == ""
+
+def _html(isi):
+    return message_from_string(
+        "Subject: [CONTOH FIKTIF]\nContent-Type: text/html; charset=utf-8\n\n" + isi)
+
+
+def test_link_dari_href_html():
+    pesan = message_from_string(CONTOH)
+    f = fitur_link(pesan)
+    assert f["n_links"] == 1
+    assert f["domains_link_defanged"] == "example[.]com"
+    assert f["n_link_mismatch"] == 0
+    assert parse_pesan(pesan)["n_urls"] == 0   # kelemahan parser lama: href tidak terbaca
+
+
+def test_link_mismatch_teks_vs_tujuan():
+    beda = _html("<a href='http://example.net/x'>www.example.com/login</a>")
+    assert fitur_link(beda)["n_link_mismatch"] == 1
+    sama = _html("<a href='http://mail.example.com/x'>example.com</a>")
+    assert fitur_link(sama)["n_link_mismatch"] == 0
+    biasa = _html("<a href='http://example.net/x'>klik di sini</a>")
+    assert fitur_link(biasa)["n_link_mismatch"] == 0
+
+
+def test_link_ip_userinfo_punycode():
+    f = fitur_link(_html(
+        "<a href='http://192.0.2.1/a'>a</a>"
+        "<a href='http://example.com@example.net/x'>b</a>"
+        "<a href='http://xn--exmple-cua.example/'>c</a>"))
+    assert f["n_links"] == 3
+    assert f["n_link_ip"] == 1
+    assert f["n_link_userinfo"] == 1
+    assert f["n_link_punycode"] == 1
+
+
+def test_url_teks_biasa_dan_deduplikasi():
+    pesan = message_from_string(
+        "Subject: [CONTOH FIKTIF]\nContent-Type: text/plain; charset=us-ascii\n\n"
+        "Lihat http://example.com/a dan lagi http://example.com/a")
+    f = fitur_link(pesan)
+    assert f["n_links"] == 1
+    assert f["n_link_domains"] == 1
+
+
+def test_skema_lain_dan_relatif_diabaikan():
+    f = fitur_link(_html("<a href='mailto:a@example.com'>x</a><a href='/lokal'>y</a>"
+                         "<a href='javascript:void(0)'>z</a>"))
+    assert f["n_links"] == 0
+    assert f["max_url_len"] == 0
+
+
+def test_tanpa_link_dan_html_rusak_tidak_error():
+    kosong = fitur_link(message_from_string("Subject: x\n\nhalo"))
+    assert kosong["n_links"] == 0
+    assert kosong["domains_link_defanged"] == ""
+    # yang diuji di sini hanya: HTML rusak tidak melempar error
+    rusak = fitur_link(_html("<a href='http://example.com' <p><form><img src=x"))
+    assert rusak["n_links"] >= 0
+
+
+def test_hitung_form_dan_gambar():
+    f = fitur_link(_html("<form action='http://example.com/p'><input name='u'></form>"
+                         "<img src='x'><img src='y'>"))
+    assert f["n_forms"] == 1
+    assert f["n_images"] == 2
