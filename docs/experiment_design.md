@@ -62,14 +62,18 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Keterbatasan: hanya satu algoritma dan satu seed, tanpa tuning; PR-AUC fitur biner sendirian dibatasi bentuknya (dua tingkat skor); ham vs spam juga mudah dibedakan dari bentuk, belum dibedakan apakah itu perbedaan wajar atau artefak subset.
 - Implikasi untuk Tahap 6 (belum diputuskan): tolok ukur "model sungguhan harus lebih baik dari model curang" tidak memadai pada batas 0,995. Calon pengganti: evaluasi pada subset email HTML tanpa header mailing list; uji eksternal MeAJOR dan phishing modern 2015-2025.
 
-## Bedah n_headers (data train saja)
+## Keputusan Tahap 5 (fitur link)
 
-- Skrip: src/eda_n_headers.py. Median n_headers per subset: easy_ham 30, easy_ham_2 30, hard_ham 13; spam 18, spam_2 16; phishing0 20, phishing1 25, phishing2 21, phishing3 23, 20051114 31 (hanya 26 email di train, jangan ditafsirkan berlebihan).
-- Dugaan awal "phishing punya header lebih sedikit daripada ham/spam" hanya sebagian benar: phishing berada di antara spam (lebih sedikit) dan easy_ham (lebih banyak). Persen email dengan n_headers <= 15: ham 22,5, spam 37,8, phishing 1,4; <= 30: ham 54,8, spam 95,1, phishing 92,6.
-- Phishing hampir tidak pernah punya header sangat sedikit: minimum tiap file Nazario sekitar 14-18 (kecuali phishing1: 6). Pola "lantai" ini konsisten dengan header tambahan dari sistem penerima pengumpul, tetapi BELUM diverifikasi (butuh nama header, bukan jumlah).
-- Subset dalam satu kelas berbeda jauh: hard_ham (median 13, header mailing list 9,6%) mirip spam, sedangkan easy_ham_2 97,1% punya header mailing list. File Nazario juga berbeda antar sesamanya (phishing0 sempit 16-24, phishing1 lebar 19-35, rentang 10%-90%), jadi model bisa mengenali file atau era, bukan hanya kelas.
-- Kesimpulan sementara: n_headers mencampur sifat email yang wajar dan cara korpus disimpan; keduanya belum bisa dipisahkan dari jumlah saja.
-- Rencana (belum diputuskan): saat re-ekstraksi di Tahap 5, tambahkan kolom diagnostik berisi NAMA header saja (tanpa isi), hanya untuk menguji dugaan di atas, bukan sebagai fitur model.
+- Yang disimpan dari link: angka ringkas dan daftar host tujuan (defanged, tanpa path, tanpa URL lengkap). Fitur URL numerik dihitung di dalam parser.
+- Fungsi: fitur_link() di src/email_parser.py, satu fungsi yang SAMA untuk semua kelas. Tahap 5b menjalankan ulang ekstraksi SpamAssassin dan Nazario dengan fungsi yang sama. parse_pesan() tidak diubah: n_urls lama tetap ada tetapi tetap tidak boleh dipakai sebagai fitur (hanya membaca URL di teks tampil, bukan href).
+- Definisi: n_links = jumlah URL http(s) unik (href di HTML + URL di teks biasa); "domain" = host lengkap termasuk subdomain (belum memakai daftar public suffix); mismatch = teks link tampak seperti domain tetapi host tujuan berbeda (www. diabaikan, subdomain dianggap sama).
+- Tes: tests/test_email_parser.py, 13 tes lolos, termasuk kasus tepi (HTML rusak, tanpa link, skema mailto/javascript/relatif, deduplikasi).
+- Risiko menghafal artefak dan cara menguji:
+  - n_links, n_link_domains, n_images, n_forms: hanya HTML yang punya tag <a>/<img>, risiko meniru "HTML = phishing". Uji di subset HTML saja dan model tanpa kelompok ini.
+  - n_link_mismatch: newsletter sah memakai domain pelacak, jadi ham bisa salah tuduh. Uji lewat error analysis false positive di ham.
+  - n_link_ip, n_link_userinfo, n_link_punycode: pola era 2003-2007, bisa basi untuk phishing modern. Uji lewat phishing modern 2015-2025 (Tahap 8).
+  - max_url_len, max_host_labels: URL pelacak newsletter modern panjang, distribusi bergeser. Uji lewat MeAJOR.
+- Keterbatasan: teks link seperti "Mr.Smith" bisa terbaca sebagai domain (mismatch palsu); link di atribut lain (action form, src gambar) belum dihitung; tanpa daftar public suffix; link yang disamarkan lewat redirect tidak terdeteksi.
 
 ## Riwayat Perubahan
 
