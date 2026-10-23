@@ -52,6 +52,17 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - EDA Tahap 1-4 melihat seluruh data, termasuk test. Itu hanya diagnostik struktural; mulai Tahap 5, keputusan fitur dan model hanya memakai data train.
 - 20051114.mbox hanya sekitar 1% phishing train dan tidak ada di test.
 
+## Hasil Uji Artefak Awal (setelah Tahap 4, hanya data train + 5 lipatan CV)
+
+- Skrip: src/artifact_check_shape.py. Model: HistGradientBoosting default, seed 42, tanpa tuning; fitur hanya metadata bentuk email (tanpa teks, tanpa n_urls, tanpa sender_domain); encoder dilatih ulang per lipatan; prediksi out-of-fold digabung. Test set tidak disentuh. Baseline: akurasi tebak-kelas-terbanyak 0,442; PR-AUC phishing acak 0,363.
+- Semua fitur bentuk: macro-F1 0,910, akurasi 0,925, PR-AUC phishing 0,995 (per lipatan 0,993-0,997); phishing precision 0,965 dan recall 0,967 pada tebakan terbanyak tanpa menyetel threshold. Target recall >= 90% tercapai tanpa membaca teks, jadi memenuhi target BUKAN bukti model mendeteksi phishing.
+- Satu kelompok sendirian (PR-AUC phishing): html 0,892; header 0,979; charset 0,678. Semua fitur kecuali satu kelompok: tanpa html 0,989; tanpa header 0,960; tanpa charset 0,991. Jalan pintas berlapis: membuang satu kelompok tidak cukup.
+- Satu fitur sendirian: n_headers 0,803; content_type 0,771; html_bytes 0,765; plain_bytes 0,698; has_html 0,688; has_plain 0,686; charset 0,678; n_received 0,556; has_list_header 0,541; has_mailman 0,530; has_x_mailer 0,420; n_parts 0,364; has_message_id 0,363. Penyebab kuatnya n_headers belum diketahui (n_received sendirian lemah, jadi bukan jumlah hop).
+- ID sumber: subset menentukan label 100% (nazario hanya phishing; spamassassin hanya ham/spam; 0 subset campur label). Ini tautologi, dilaporkan sebagai bukti, bukan sebagai model.
+- Keterbatasan: hanya satu algoritma dan satu seed, tanpa tuning; PR-AUC fitur biner sendirian dibatasi bentuknya (dua tingkat skor); ham vs spam juga mudah dibedakan dari bentuk, belum dibedakan apakah itu perbedaan wajar atau artefak subset.
+- Implikasi untuk Tahap 6 (belum diputuskan): tolok ukur "model sungguhan harus lebih baik dari model curang" tidak memadai pada batas 0,995. Calon pengganti: evaluasi pada subset email HTML tanpa header mailing list; uji eksternal MeAJOR dan phishing modern 2015-2025.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
+- Setelah Tahap 4: uji artefak awal menunjukkan model hanya-bentuk mencapai PR-AUC phishing 0,995, sehingga tolok ukur Tahap 6 ("model sungguhan harus lebih baik dari model curang") perlu diganti. Penggantinya diputuskan di Tahap 6, bukan sekarang.
