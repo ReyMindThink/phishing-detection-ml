@@ -265,3 +265,10 @@ def fitur_link(msg: Message) -> dict:
         "n_images": n_img,
         "n_forms": n_form,
     }
+
+def nama_header(msg: Message) -> str:
+    """Nama header unik (huruf kecil, urut abjad, dipisah spasi). TANPA isi.
+
+    Hanya untuk diagnostik artefak dataset (Tahap 6), BUKAN fitur model.
+    """
+    return " ".join(sorted({k.lower() for k in msg.keys()}))

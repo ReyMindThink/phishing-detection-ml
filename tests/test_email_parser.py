@@ -1,6 +1,6 @@
 from email import message_from_string
 
-from src.email_parser import defang, domain_pengirim, ekstrak_metadata, fitur_link, parse_pesan
+from src.email_parser import defang, domain_pengirim, ekstrak_metadata, fitur_link, nama_header, parse_pesan
 
 CONTOH = (
     "Subject: [CONTOH FIKTIF] Verifikasi akun\n"
@@ -124,3 +124,16 @@ def test_hitung_form_dan_gambar():
                          "<img src='x'><img src='y'>"))
     assert f["n_forms"] == 1
     assert f["n_images"] == 2
+
+def test_nama_header_unik_urut_tanpa_isi():
+    pesan = message_from_string(
+        "Received: from a.example.com\n"
+        "Received: from b.example.com\n"
+        "X-Mailer: Contoh\n"
+        "Subject: [CONTOH FIKTIF] rahasia123\n\n"
+        "halo")
+    hasil = nama_header(pesan)
+    assert hasil == "received subject x-mailer"
+    assert "rahasia123" not in hasil
+    assert nama_header(message_from_string("")) == ""
+    
