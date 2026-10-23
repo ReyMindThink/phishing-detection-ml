@@ -84,7 +84,19 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
   - max_url_len, max_host_labels: URL pelacak newsletter modern panjang, distribusi bergeser. Uji lewat MeAJOR.
 - Keterbatasan: teks link seperti "Mr.Smith" bisa terbaca sebagai domain (mismatch palsu); link di atribut lain (action form, src gambar) belum dihitung; tanpa daftar public suffix; link yang disamarkan lewat redirect tidak terdeteksi.
 
+## Hasil Tahap 5b (ekstraksi ulang dengan fitur link)
+
+- Kolom baru (12): n_links, n_link_domains, domains_link_defanged, n_link_mismatch, n_link_ip, n_link_userinfo, n_link_punycode, max_url_len, max_host_labels, n_images, n_forms, header_names. header_names (nama header unik tanpa isi) hanya diagnostik, BUKAN fitur model, dan belum dianalisis. emails_clean.csv sekarang 9298 baris, 37 kolom (25 + 12).
+- Bukti data lama tidak bergeser: 23 kolom lama SpamAssassin dan 21 kolom lama Nazario identik dengan ekstraksi lama (src/check_extraction_same.py), gagal=0 di semua subset dan file; sidik jari content_hash, isi splits.csv, dan partisi grup (7271 grup; src/fingerprint_data.py dan src/fingerprint_groups.py) sama persis, jadi make_splits.py tetap menghasilkan split yang sama. splits.csv tidak dibuat ulang.
+- Lingkungan ekstraksi: SpamAssassin di Python 3.14.3 (lokal), Nazario di Docker Python 3.12.15. Uji lintas versi (src/env_digest.py) pada 6047 email SpamAssassin: 0 perbedaan pada teks, metadata, fitur link, header_names, dan domain. Batas: SpamAssassin sebagian besar teks biasa, jadi HTML ala phishing belum teruji lintas versi.
+- % email yang punya link, n_urls lama vs n_links baru: easy_ham 80,1 vs 80,1; easy_ham_2 96,9 vs 97,2; hard_ham 82,0 vs 96,4; spam 58,4 vs 83,2; spam_2 53,6 vs 77,8; Nazario 62,0-75,1 vs 94,4-98,9 (rentang per file). Pada teks biasa kedua fungsi sepakat; selisih hanya muncul di HTML. Ini membenarkan larangan memakai n_urls.
+- n_link_mismatch > 0: phishing 44,0-52,9% (rentang per file), spam 0,6-1,0%, hard_ham 18,0%, easy_ham dan easy_ham_2 0,0%. Host berupa IP: phishing 19,5-47,1% (sangat berbeda antar file, jadi model bisa mengenali file atau era), spam 11,0-16,0%, ham 0,0-1,6%.
+- Peringatan penafsiran: fitur link, mismatch, form, dan gambar bernilai nol menurut konstruksi pada email teks biasa, sehingga perbandingan antar kelas bercampur dengan perbedaan format (HTML). Nilai fitur ini harus dinilai di dalam subset email HTML, di data train.
+- Duplikat exact (866 kelompok, 2624 email; ham 23, spam 71, phishing 772 kelompok): fitur angka link stabil antar salinan (phishing: n_links beda di 3,0% kelompok, n_link_domains 2,5%, n_link_mismatch 0,3%, n_images 0,6%, n_forms 0,0%; ham dan spam 0,0-1,4%). Tetapi daftar host tujuan berbeda pada 28,1% kelompok phishing. Akibatnya fitur berbasis identitas host (misalnya domain link vs domain pengirim) belum aman diambil dari salinan pertama. Opsi, belum diputuskan: gabungkan host dari semua salinan sebelum duplikat dibuang (aman karena duplikat exact selalu satu grup dan satu split).
+- Keterbatasan: fitur link diambil dari salinan pertama untuk duplikat exact; penyebab perbedaan host antar salinan belum diselidiki.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
 - Setelah Tahap 4: uji artefak awal menunjukkan model hanya-bentuk mencapai PR-AUC phishing 0,995, sehingga tolok ukur Tahap 6 ("model sungguhan harus lebih baik dari model curang") perlu diganti. Penggantinya diputuskan di Tahap 6, bukan sekarang.
+- Tahap 5b: kolom diagnostik header_names ditambahkan saat ekstraksi ulang (rencana di bagian "Bedah n_headers" terlaksana); tidak ada keputusan sebelumnya yang diubah.
