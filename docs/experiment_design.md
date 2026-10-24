@@ -106,6 +106,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi vs hasil: IP spam meleset (prediksi 20-30%, hasil 16,5%; link IP spam juga ada di teks biasa). Lainnya sesuai.
 - Keterbatasan: kesimpulan tentang ham HTML bersandar pada satu subset (hard_ham) dan satu lipatan; persen tanpa interval kepercayaan; belum ada uji model (5c-2).
 
+## Hasil Tahap 5c-2 (uji CV fitur link di dalam email HTML, data train)
+
+- Skrip: src/cv_link_html.py. 3474 email HTML train (ham 142, spam 789, phishing 2543), HistGradientBoosting default, seed 42, 5 lipatan dari splits.csv, test tidak disentuh. PR-AUC phishing acak di subset ini 0,732. Dua subkelompok: tujuan (n_links, n_link_domains, n_link_mismatch, n_link_ip, n_link_userinfo, n_link_punycode, max_url_len, max_host_labels) dan letak (n_images, n_forms).
+- PR-AUC phishing (per lipatan): bentuk saja 0,997 (0,996-0,998); bentuk+tujuan 0,999; bentuk+letak 0,997; bentuk+tujuan+letak 0,999; tujuan saja 0,968; letak saja 0,844; tujuan+letak 0,976. AUC phishing vs spam: bentuk 0,992, bentuk+tujuan 0,996, tujuan saja 0,912. AUC vs ham (n=142, 63% di satu lipatan, tidak ditafsirkan): bentuk 0,996, tujuan saja 0,900.
+- Selisih berpasangan terhadap bentuk saja: tujuan +0,0014 (membaik 5 dari 5 lipatan), letak +0,0003 (3 dari 5), keduanya +0,0017 (5 dari 5). Aturan dikunci (selisih >= 0,005 dan >= 4 dari 5 lipatan): tidak ada yang lolos.
+- Penafsiran: efek langit-langit. Fitur bentuk saja sudah 0,997 di dalam HTML, jadi PR-AUC tidak cukup peka untuk menilai nilai tambah link. Ini bukan bukti link tak berguna. Fitur link sendirian cukup kuat, tetapi belum bisa dipisahkan antara sinyal isi dan gaya sumber/era (IP berbeda antar file, n_forms berarah terbalik, spam dan phishing beda sumber).
+- Prediksi vs hasil: PR-AUC bentuk (prediksi 0,96-0,995, hasil 0,997) dan tujuan saja (prediksi 0,85-0,93, hasil 0,968) meleset karena kekuatan link diremehkan; lainnya sesuai.
+- Keterbatasan: lima lipatan memakai data latih yang tumpang tindih, jadi "membaik di 5 dari 5" bukan uji signifikansi; satu algoritma dan satu seed; ham HTML hanya 142.
+- Keputusan: kedua subkelompok tetap kandidat. Pemakaian akhir ditentukan di Tahap 6-7 setelah uji artefak.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
