@@ -126,6 +126,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
   4. Subjek (bila dipakai). Dugaan yang harus diukur: subjek ham membawa tag milis (misalnya berawalan "[") dan "Re:". Uji: persen subjek berawalan "[" dan "Re:" per kelas dan per subset.
 - Ukuran jujur: jangan menyimpulkan dari satu subset; sebut n tiap sel.
 
+## Hasil Tahap 5d-2 (model teks pertama, hanya body_text, data train)
+
+- Skrip: src/cv_text.py. TfidfVectorizer (token huruf >= 3, min_df 3, maks 20000 fitur, sublinear_tf) + LogisticRegression (seed 42) dalam satu Pipeline, di-fit hanya di lipatan latih (kosakata 15537-16909 per lipatan). 5 lipatan dari splits.csv, test tidak disentuh.
+- Semua train (n=7438): macro-F1 0,955; akurasi 0,961 (dari confusion matrix); PR-AUC phishing 0,994 (per lipatan 0,990-0,997; acak 0,363); AUC phishing vs spam 0,992, vs ham 0,997. Confusion matrix (benar -> tebakan ham/spam/phishing): ham 3245/30/13; spam 83/1317/48; phishing 71/47/2584. Phishing: precision 0,977 (2584/2645), recall 0,956 (2584/2702).
+- Di dalam email HTML (n=3474; acak 0,732): PR-AUC phishing 0,998 (per lipatan 0,996-1,000); AUC phishing vs spam 0,995 (n=3332).
+- Recall phishing per file: 20051114 0,962 (n=26, tidak ditafsirkan), phishing0 0,859 (n=248), phishing1 0,978 (n=267), phishing2 0,945 (n=757), phishing3 0,976 (n=1404).
+- Prediksi vs hasil: macro-F1 dan PR-AUC semua sesuai rentang. PR-AUC di HTML (0,998) dan AUC vs spam di HTML (0,995) di atas rentang prediksi. Recall >= 0,95 hanya terpenuhi di 2 dari 4 file besar (phishing0 dan phishing2 di bawahnya).
+- Penafsiran: model teks tanpa fitur bentuk (0,994) hampir setara model bentuk tanpa teks (0,995). Dua jalur berbeda mendekati langit-langit yang sama, jadi keduanya mungkin menangkap perbedaan sumber yang sama (sisa HTML, footer milis, gaya era), bukan niat phishing. Aturan: skor >= 0,99 dicurigai artefak; belum diuji. Pipeline mencegah kebocoran TF-IDF antar lipatan; kebocoran kampanye berkata berbeda masih mungkin.
+- Keterbatasan: satu algoritma, satu seed, tanpa tuning; keputusan argmax tanpa threshold; sebab recall rendah di phishing0 belum diselidiki; prevalensi data tidak realistis.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
