@@ -76,7 +76,7 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Yang disimpan dari link: angka ringkas dan daftar host tujuan (defanged, tanpa path, tanpa URL lengkap). Fitur URL numerik dihitung di dalam parser.
 - Fungsi: fitur_link() di src/email_parser.py, satu fungsi yang SAMA untuk semua kelas. Tahap 5b menjalankan ulang ekstraksi SpamAssassin dan Nazario dengan fungsi yang sama. parse_pesan() tidak diubah: n_urls lama tetap ada tetapi tetap tidak boleh dipakai sebagai fitur (hanya membaca URL di teks tampil, bukan href).
 - Definisi: n_links = jumlah URL http(s) unik (href di HTML + URL di teks biasa); "domain" = host lengkap termasuk subdomain (belum memakai daftar public suffix); mismatch = teks link tampak seperti domain tetapi host tujuan berbeda (www. diabaikan, subdomain dianggap sama).
-- Tes: tests/test_email_parser.py, 13 tes lolos, termasuk kasus tepi (HTML rusak, tanpa link, skema mailto/javascript/relatif, deduplikasi).
+- Tes: tests/test_email_parser.py, 14 tes lolos, termasuk kasus tepi (HTML rusak, tanpa link, skema mailto/javascript/relatif, deduplikasi).
 - Risiko menghafal artefak dan cara menguji:
   - n_links, n_link_domains, n_images, n_forms: hanya HTML yang punya tag <a>/<img>, risiko meniru "HTML = phishing". Uji di subset HTML saja dan model tanpa kelompok ini.
   - n_link_mismatch: newsletter sah memakai domain pelacak, jadi ham bisa salah tuduh. Uji lewat error analysis false positive di ham.
@@ -94,6 +94,17 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Peringatan penafsiran: fitur link, mismatch, form, dan gambar bernilai nol menurut konstruksi pada email teks biasa, sehingga perbandingan antar kelas bercampur dengan perbedaan format (HTML). Nilai fitur ini harus dinilai di dalam subset email HTML, di data train.
 - Duplikat exact (866 kelompok, 2624 email; ham 23, spam 71, phishing 772 kelompok): fitur angka link stabil antar salinan (phishing: n_links beda di 3,0% kelompok, n_link_domains 2,5%, n_link_mismatch 0,3%, n_images 0,6%, n_forms 0,0%; ham dan spam 0,0-1,4%). Tetapi daftar host tujuan berbeda pada 28,1% kelompok phishing. Akibatnya fitur berbasis identitas host (misalnya domain link vs domain pengirim) belum aman diambil dari salinan pertama. Opsi, belum diputuskan: gabungkan host dari semua salinan sebelum duplikat dibuang (aman karena duplikat exact selalu satu grup dan satu split).
 - Keterbatasan: fitur link diambil dari salinan pertama untuk duplikat exact; penyebab perbedaan host antar salinan belum diselidiki.
+
+## Hasil Tahap 5c-1 (EDA fitur link, hanya email HTML, data train)
+
+- Skrip: src/eda_link_html.py. Split terbukti: train 7438 (ham 3288, spam 1448, phishing 2702), test 1860; test dibuang di awal skrip. Email HTML di train: 3474 (ham 142, spam 789, phishing 2543). PR-AUC phishing acak di dalam subset HTML = 0,732 (bukan 0,363).
+- Ukuran sel: ham HTML hampir semuanya hard_ham (124 dari 142); easy_ham 5 dan easy_ham_2 13 email HTML (n < 30, tidak ditafsirkan). Ham HTML per lipatan CV = 24/10/9/90/9: 63% ada di satu lipatan, tiga lipatan hanya punya 9-10 contoh.
+- Median n_links: ham 34, spam 2, phishing 1. n_link_mismatch > 0: ham 31,7%, spam 1,6%, phishing 53,7% (empat file Nazario besar 49,2-57,7; dua subset spam 1,4-1,7). Mismatch memisahkan phishing dari spam dengan baik tetapi lemah terhadap ham HTML (newsletter memakai domain pelacak; hard_ham 36,3%).
+- n_link_ip > 0: ham 1,4%, spam 16,5%, phishing 24,3% (empat file besar 16,0-43,2): sangat beda antar file, risiko mengenali file/era.
+- n_forms > 0: ham 38,0%, spam 19,1%, phishing 2,3%. Berlawanan dengan intuisi phishing modern: di data 2003-2007 form tertanam ada di newsletter sah (hard_ham 42,7%). Model akan belajar "ada form = ham"; pola ini bisa terbalik pada phishing modern.
+- n_images > 0: ham 86,6%, spam 49,6%, phishing 74,0 (hard_ham 97,6%).
+- Prediksi vs hasil: IP spam meleset (prediksi 20-30%, hasil 16,5%; link IP spam juga ada di teks biasa). Lainnya sesuai.
+- Keterbatasan: kesimpulan tentang ham HTML bersandar pada satu subset (hard_ham) dan satu lipatan; persen tanpa interval kepercayaan; belum ada uji model (5c-2).
 
 ## Riwayat Perubahan
 
