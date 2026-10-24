@@ -136,6 +136,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Penafsiran: model teks tanpa fitur bentuk (0,994) hampir setara model bentuk tanpa teks (0,995). Dua jalur berbeda mendekati langit-langit yang sama, jadi keduanya mungkin menangkap perbedaan sumber yang sama (sisa HTML, footer milis, gaya era), bukan niat phishing. Aturan: skor >= 0,99 dicurigai artefak; belum diuji. Pipeline mencegah kebocoran TF-IDF antar lipatan; kebocoran kampanye berkata berbeda masih mungkin.
 - Keterbatasan: satu algoritma, satu seed, tanpa tuning; keputusan argmax tanpa threshold; sebab recall rendah di phishing0 belum diselidiki; prevalensi data tidak realistis.
 
+## Hasil Tahap 5d-3 (kata stabil dan phishing0, data train)
+
+- Skrip: src/words_text.py. 30 kata teratas per kelas (koefisien Logistic Regression) per lipatan; stabil = muncul di >= 4 dari 5 lipatan: ham 27, spam 22, phishing 28 dari 30. Persen email per kelas yang memuat kata dihitung deskriptif di train, bukan input model.
+- Ham: kata stabil hampir semuanya jejak sumber (milis dan topik korpus): listinfo 52,3% ham vs 0,1% phishing, mailman 41,7% vs 0,1%, wrote 35,7% vs 0,2%, juga rpm, razor, spamassassin, linux. Model teks mengenali ham lewat footer milis, jalan pintas yang sama dengan has_list_header pada fitur bentuk.
+- Spam: kata promosi (free 46,1%, remove/removed, click, money, guaranteed, investment, opt).
+- Phishing: kata akun dan merek (account 62,4%, paypal 27,7% vs 0,3% ham, ebay 20,8%, bank, security, confirm, update, customer, member); tidak ada fragmen URL. Terikat era dan merek 2003-2007. Kata umum (your 82,7%, please 73,9%, thank 54,6%) juga tinggi di spam. Anomali BELUM dipahami: nama (annie, paul) dan kata ganti (had, him, his, she, her) masuk teratas phishing padahal jarang di phishing (2-8%); koefisien multinomial bersifat relatif antar kelas, belum diuji.
+- phishing0 (train, n=248): terdeteksi 213, terlewat 35 (recall 0,859); salah ke spam 19, ke ham 16. Terlewat vs terdeteksi: median panjang teks 2103 vs 1187 karakter, HTML 74,3% vs 94,4%. 11 dari 35 terlewat berbagi token yang sama (gnu, gnupg, pgp, signature, linux, mailer, dan token acak): pola email teknis ber-PGP. Dugaan (BELUM diverifikasi): label noise, satu kelompok duplikat, atau email forward.
+- Prediksi vs hasil: kestabilan, kosakata akun/merek, dan kata milis ham sesuai; fragmen URL tidak muncul; terlewat ke ham tidak dominan (spam 19 vs ham 16); terlewat justru lebih panjang, bukan lebih pendek.
+- Keterbatasan: persen deskriptif, bukan pentingnya fitur; kestabilan lintas lipatan memakai data latih yang tumpang tindih; satu model dan satu seed; hanya 35 email terlewat.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
