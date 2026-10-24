@@ -116,6 +116,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Keterbatasan: lima lipatan memakai data latih yang tumpang tindih, jadi "membaik di 5 dari 5" bukan uji signifikansi; satu algoritma dan satu seed; ham HTML hanya 142.
 - Keputusan: kedua subkelompok tetap kandidat. Pemakaian akhir ditentukan di Tahap 6-7 setelah uji artefak.
 
+## Rencana Tahap 5d (fitur teks; ditulis sebelum model teks dijalankan)
+
+- Prinsip: TF-IDF (kosakata dan bobot IDF) di-fit hanya pada lipatan latih di dalam tiap putaran CV (Pipeline). Vektorizer tidak pernah melihat lipatan validasi maupun test. Hanya data train.
+- Kelompok fitur, risiko menghafal artefak, dan cara menguji:
+  1. TF-IDF kata dari teks email. Risiko: sisa footer milis, kutipan balasan, nama orang atau situs era 2002-2007, tahun, nama merek (merek yang ditiru sah sebagai sinyal tetapi terikat era), sisa teks CSS atau skrip dari HTML. Uji: (a) cetak kata berbobot tertinggi per kelas (hanya kata, tanpa isi email) lalu tandai yang bersifat artefak; (b) leave-one-file-out untuk phishing: latih tanpa satu file Nazario, uji di file itu (20051114 tidak ditafsirkan, hanya 26 email di train); (c) ablasi: buang daftar kata artefak yang ditandai, ukur penurunan PR-AUC.
+  2. Kata urgensi (daftar tulis tangan). Risiko: daftar disusun dari prasangka peneliti, dan spam serta newsletter juga memakai urgensi. Uji: persen email berisi kata urgensi per kelas dan per subset; bandingkan phishing vs spam di dalam email HTML.
+  3. Statistik teks sederhana (panjang, rasio huruf besar, rasio angka). Risiko: proksi format dan sumber. Uji: PR-AUC fitur sendirian dan di dalam subset HTML.
+  4. Subjek (bila dipakai). Dugaan yang harus diukur: subjek ham membawa tag milis (misalnya berawalan "[") dan "Re:". Uji: persen subjek berawalan "[" dan "Re:" per kelas dan per subset.
+- Ukuran jujur: jangan menyimpulkan dari satu subset; sebut n tiap sel.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
