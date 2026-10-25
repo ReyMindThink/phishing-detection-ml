@@ -226,6 +226,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi vs hasil: kontrol dan batas PR-AUC/AUC sesuai; recall ham, easy_ham_2, kenaikan recall phishing0, dan stabilitas kontrol di subset kecil meleset.
 - Keterbatasan: satu seed dan satu daftar kata; daftar dipilih dari tabel 5d-3 (sudah dilihat); subset kecil (n < 200) hanya petunjuk, batas noise 2-3 email.
 
+## Hasil Tahap 6-4 (leave-one-file-out untuk phishing, data train)
+
+- Skrip: src/lofo_phishing.py. Untuk tiap file Nazario F: latih pada semua baris train kecuali phishing F (ham dan spam ikut), uji pada phishing F saja. Dua model: teks (TF-IDF + LogReg, seperti 5d-2) dan bentuk (HGB, 11 fitur numerik + content_type + charset). Kontrol lolos: diagonal OOF teks 3245/1317/2584. Recall phishing OOF seluruh train: teks 0,956, bentuk 0,967.
+- Tumpang tindih: 124 dari 1629 grup phishing (7,6%) muncul di >= 2 file, tetapi grup itu besar: email "bersih" (group_final tidak ada di file lain) hanya 78,2% (phishing0), 44,6% (phishing1), 62,9% (phishing2), 82,5% (phishing3). Seluruh 26 email 20051114 berbagi grup dengan file lain, jadi LOFO-nya tidak bermakna.
+- Recall phishing (OOF -> LOFO -> LOFO bersih). Teks: phishing0 0,859 -> 0,819 -> 0,768; phishing1 0,978 -> 0,989 -> 0,975; phishing2 0,945 -> 0,902 -> 0,855; phishing3 0,976 -> 0,816 -> 0,777. Bentuk: phishing0 0,923 -> 0,944 -> 0,928; phishing1 0,959 -> 0,978 -> 0,958; phishing2 0,959 -> 0,909 -> 0,891; phishing3 0,982 -> 0,939 -> 0,942. Kolom OOF dihitung pada semua email file itu, bukan hanya yang bersih.
+- Penurunan OOF - LOFO (4 file besar): teks rata-rata 0,058 (berbobot 0,099); bentuk 0,014 (berbobot 0,033). Kesalahan LOFO (ke ham/spam): teks 16/29, 3/0, 45/29, 249/10; bentuk 4/10, 1/5, 9/60, 17/68. Tanpa phishing3 di data latih, model teks menebak 249 dari 259 email phishing3 yang salah sebagai ham.
+- Penafsiran (hipotesis): model bentuk tahan terhadap penghapusan satu file karena semua file Nazario membawa penanda koleksi yang sama (status ada di 100% tiap file), jadi LOFO tidak menguji jalan pintas bentuk. Model teks lebih sensitif terhadap pergeseran gaya antar file; phishing3 (52% phishing train) tampak berbeda dari file lain sehingga tanpanya model teks menganggapnya ham. Penyebab perbedaan (era, merek, bahasa) belum diselidiki. Tidak dibuktikan bahwa model teks "lebih jujur".
+- Prediksi vs hasil: kontrol, OOF per file, dan grup lintas file < 15% sesuai. Meleset: porsi "bersih" >= 85% (hasil 44,6-82,5%); teks phishing3 >= 0,85 (hasil 0,816); bentuk lebih rapuh daripada teks (hasil sebaliknya).
+- Keterbatasan: satu seed; hanya recall kelas positif; n phishing0 248 (galat standar sekitar 2,5 poin); 20051114 (n=26) tidak ditafsirkan; "bersih" dihitung dari group_final (cosine 0,9) sehingga kemiripan di bawah ambang tidak terdeteksi; semua file satu sumber, jadi LOFO bukan bukti generalisasi ke phishing modern.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
