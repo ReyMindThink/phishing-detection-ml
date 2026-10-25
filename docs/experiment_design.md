@@ -259,6 +259,15 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi vs hasil: kontrol, LOFO TOP3 <= 0,40 (0,129), kemunculan TOP3 di tempat lain <= 10 (3), dan prevalensi flag di ham/spam/phishing lain sesuai. Meleset: recall OOF TOP3 >= 0,95 (0,943, tipis); flag di kesalahan >= 50% (42,5%); tidak terjelaskan <= 30 (61).
 - Keterbatasan: daftar kata dan ambang eksploratif; satu seed dan satu model; sel kecil (n=16 sampai 47 per domain; domain lain+flag n=19); asal-usul teks naratif tidak diperiksa; hanya data train.
 
+## Kesimpulan Tahap 6 (tolok ukur pengganti dan uji artefak; data train)
+
+- Tujuan tahap: membuktikan model sungguhan memberi nilai di luar jalan pintas. Hasil: TIDAK dapat dibuktikan dari data internal ini, karena semua phishing berasal dari satu sumber (Nazario; header status ada di 100% phishing dan 0% ham dan spam) dan semua pembanding berasal dari sumber lain.
+- Benchmark H2 (HTML tanpa header milis; ham 126, spam 729, phishing 2543) jenuh: AUC phishing vs spam bentuk HGB 0,993, teks 0,996, link 0,928; tidak ada model yang mengalahkan bentuk menurut aturan terkunci (selisih >= 0,005 dan membaik di >= 4 dari 5 lipatan). Ham di H2 96,8% hard_ham dan hanya 40 yang tumpang tindih, jadi tidak ada klaim false positive ham dari data ini.
+- Ablasi kata sumber ham (13 dan 15 kata, kontrol 15 kata acak): recall ham tidak turun (0,987 ke 0,988). Model teks redundan, bukan terbukti bergantung pada kata itu; klaim 5d-3 dan 5d-4 dikoreksi.
+- LOFO (satu file Nazario ditahan): penurunan recall teks rata-rata 0,058 (berbobot 0,099; phishing3 0,976 ke 0,816), bentuk 0,014. Bentuk tahan karena semua file membawa penanda koleksi yang sama, jadi LOFO tidak menguji jalan pintas bentuk.
+- Kebocoran tingkat merek atau templat: tiga domain bank (209 email di phishing3 dalam 207 grup) punya recall OOF 0,943 tetapi LOFO 0,129. Kunci grup teks (cosine 0,9) tidak menangkap merek, jadi recall CV acak optimis untuk merek yang sudah terlihat. Leave-brand-out dan uji kepekaan cosine dikerjakan di Tahap 8; splits.csv tidak diubah.
+- Status: Tahap 6 selesai. Bukti nilai tambah di luar jalan pintas ditunda ke Tahap 8 (leave-brand-out, MeAJOR, phishing modern 2015-2025 lewat Docker). Fitur bentuk dan header dipertahankan sebagai pembanding "model curang", bukan otomatis fitur model.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
