@@ -195,6 +195,17 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Implikasi untuk Tahap 6: membuang satu kelompok fitur tidak cukup; butuh tolok ukur pengganti. Fitur header dan cap tidak masuk model sungguhan tanpa pembenaran.
 - Keterbatasan: satu algoritma dan satu seed; K2 eksploratif; ablasi hanya pada n_headers (nama header tidak dipakai sebagai fitur); angka dari data lama.
 
+## Hasil Tahap 6-1 (ukuran subset sulit, data train, tanpa model)
+
+- Skrip: src/eda_hard_subset.py. Subset didefinisikan dan diukur SEBELUM ada model yang dinilai di dalamnya. H1 = email HTML; H2 = H1 tanpa header milis (has_list_header salah); H3 = H2 tanpa subjek berawalan "Re:" atau "[" (isi subjek tidak dicetak).
+- Ukuran (ham / spam / phishing): H1 142 / 789 / 2543; H2 126 / 729 / 2543; H3 121 / 695 / 2460 (H2 = 3,8% / 50,3% / 94,1% dari kelas masing-masing di train).
+- H2 per lipatan 0..4 (ham / spam / phishing): 19/145/523, 7/132/502, 6/123/506, 87/140/501, 7/189/511. 69% ham H2 ada di lipatan 3.
+- H2 per subset: ham 122 hard_ham + 4 easy_ham_2 + 0 easy_ham; spam 200 (spam) + 529 (spam_2); phishing 19/227/234/712/1351 (20051114, phishing0-3).
+- Tumpang tindih n_headers di H2 (ham / spam / phishing): <=13: 86/56/0; 14-17: 19/424/190; 18-21: 7/178/784; 22-25: 7/24/1091; >=26: 7/47/478. 68,3% ham H2 punya n_headers <= 13, tidak satu pun phishing; di rentang n_headers >= 14 hanya 40 ham tersisa.
+- Penafsiran: ham di subset sulit hampir seluruhnya hard_ham (96,8%), jadi "ham vs phishing di HTML" praktis = hard_ham vs Nazario, dan pemisahan di rentang n_headers <= 13 tidak memerlukan model sungguhan. Evaluasi phishing vs spam di H2 jauh lebih layak (tumpang tindih lebar), tetapi beda sumber tetap ada. Tidak ada subset yang bersih dari cap pengumpul karena semua phishing memiliki header status.
+- Prediksi vs hasil: lipatan, tumpang tindih, dan ukuran ham H3 sesuai; ukuran H2 ham (126 vs 105-125) meleset 1, spam (729 vs 740-789) meleset karena lebih banyak spam punya header milis, penurunan phishing H3 (3,3% vs < 3%) meleset tipis.
+- Keterbatasan: belum ada model yang dinilai; ham H2 tidak cukup untuk klaim apa pun tentang false positive pada email sah; butuh sumber ham HTML tambahan (harus saya verifikasi sendiri) atau uji eksternal (Tahap 8).
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
