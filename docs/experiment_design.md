@@ -166,6 +166,15 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Penafsiran: ada dua pola kesalahan (kampanye utuh terlewat di phishing0; email tunggal tersebar di phishing2 dan phishing3). Phishing "unik" (grup tunggal, 79% grup, 47% email) lebih sulit (0,938). Recall per email sedikit lebih optimis daripada per grup.
 - Keterbatasan: satu model dan satu seed; grup > 20 hanya 4; penyebab kesalahan email tunggal belum dianalisis; angka hanya untuk data train lama, bukan phishing modern.
 
+## Hasil Tahap 5d-6 (EDA subjek, kata urgensi, statistik teks, data train)
+
+- Skrip: src/eda_text_extras.py. Daftar kata tulisan tangan (bahasa Inggris), disusun dari prasangka peneliti sebelum diukur. ANCAMAN: urgent, immediately, suspend(ed), expire(s/d), locked, unauthorized/unauthorised, terminated/termination, deactivated/deactivation, restricted, warning, alert. AKSI: verify, confirm, validate, login, log in, sign in, password.
+- Subjek (semua train; ham/spam/phishing): awalan "[" 15,5/5,2/2,8%; awalan "Re:" 53,5/3,9/1,0% (easy_ham_2 71,2%; di dalam HTML ham hanya 4,9%, n=142); subjek kosong di bawah 1%. "Re:" menyerupai jalan pintas header milis (utas balasan ham, hampir tidak ada di phishing), terikat korpus.
+- Kata urgensi, email HTML (ham/spam/phishing): ancaman 12,7/10,5/36,5%; aksi 14,8/2,3/51,2%. Antar file phishing: aksi 37,3% (phishing3) sampai 74,5% (phishing1), ancaman 28,2 sampai 49,6%, jadi sinyalnya searah tetapi terikat sumber dan era. hard_ham HTML (n=124) 16,9% memuat kata aksi: risiko false positive pada email transaksional sah.
+- Statistik teks: median rasio huruf besar spam 9,4%, ham dan phishing 5,3% (HTML 10,2/8,5/5,3). Median rasio angka phishing 0,9% vs ham 1,6% dan spam 1,8%. Median panjang di HTML: ham 3329 (dibawa hard_ham, median 3823), spam 1007, phishing 1268; bercampur dengan perbedaan subset.
+- Prediksi vs hasil: "Re:" , ancaman, aksi spam, selisih antar file, dan rasio huruf besar sesuai. Meleset: awalan "[" (ham 15,5 bukan >= 20; spam 5,2 bukan < 5; phishing 2,8 bukan < 2) dan aksi phishing HTML (51,2 bukan >= 55). Penyebab 2,8% phishing berawalan "[" (phishing1 8,6%, phishing2 6,3%) belum diselidiki.
+- Keterbatasan: hanya deskriptif, tanpa ukuran nilai tambah bagi model; daftar kata satu bahasa; ham HTML hanya 142 (124 hard_ham).
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
@@ -173,3 +182,4 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Tahap 5b: kolom diagnostik header_names ditambahkan saat ekstraksi ulang (rencana di bagian "Bedah n_headers" terlaksana); tidak ada keputusan sebelumnya yang diubah.
 - Tahap 5c: dua keputusan terbuka ditutup tanpa dikerjakan (pilihan A). (i) Menggabungkan host dari semua salinan duplikat tidak dilakukan: butuh mengubah make_clean_dataset dengan risiko menggeser baris, split, dan grup, sementara fitur angka link sudah stabil antar salinan (5b) dan nilai tambah link kecil (5c-2). (ii) Fitur "domain link vs domain pengirim" tidak dibuat: ia turunan sender_domain yang bukan fitur, dan domain pengirim phishing adalah merek yang dipalsukan. Keduanya dicatat sebagai keterbatasan: fitur berbasis identitas host belum tersedia; fitur_link mengambil host dari salinan pertama untuk duplikat exact. Tidak ada keputusan terkunci yang berubah.
 - Tahap 5c: fitur link (kelompok tujuan dan letak) tetap kandidat. Nilai akhirnya dinilai setelah uji artefak di Tahap 6, bukan dari PR-AUC di dalam subset HTML (efek langit-langit di 0,997).
+- Tahap 5d: dua uji dari rencana (leave-one-file-out untuk phishing dan ablasi daftar kata artefak) tidak dikerjakan di 5d dan ditunda ke Tahap 6, karena butuh tolok ukur pengganti. Subjek dan kata urgensi baru diukur deskriptif dan belum diputuskan menjadi fitur model. Tidak ada keputusan terkunci yang berubah.
