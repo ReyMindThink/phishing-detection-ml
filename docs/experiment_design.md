@@ -185,6 +185,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi vs hasil: kandidat >= 1 nama, selisih antar file >= 30 poin, dan header milis paling ham sesuai. Prediksi "selisih menyusut >= 50%" meleset (17%) karena kandidat hanya satu nama. Perhitungan kasar (rata-rata lima nama kandidat luas = sekitar 3,0 header per email phishing) menunjukkan dampak lebih besar bila semua cap pengumpul dibuang; ini hipotesis setelah melihat hasil, belum diukur.
 - Keterbatasan: persen dihitung per kelas di train; asal-usul header (siapa yang menambah) belum diverifikasi; "lantai" n_unique tidak sepenuhnya terjelaskan; tanpa model.
 
+## Hasil Tahap 5e-2 (ablasi cap pengumpul pada n_headers, data train)
+
+- Skrip: src/ablate_header_caps.py. Model dan seed sama dengan artifact_check_shape.py (HistGradientBoosting seed 42, 5 lipatan splits.csv, test tidak disentuh); tiga angka kontrol terproduksi ulang (0,995; 0,979; 0,803). n_headers_adj = n_headers dikurangi jumlah nama cap pada email itu. K1 (terkunci sebelum hasil): status, x-original-to, x-uid, lines, content-length, semua x-spam-\*. K2 (ditentukan setelah melihat tabel 5e-1, eksploratif): K1 + x-status + x-keywords. Batas: n_headers menghitung duplikat nama, header_names hanya nama unik.
+- Cap rata-rata per email: phishing K1 3,70, K2 5,56; spam K2 0,37; ham K2 0,01. Median n_headers (asli / K1 / K2): ham 30/30/30; spam 17/17/16; phishing 22/19/17.
+- PR-AUC phishing (asli -> K1 -> K2): semua fitur bentuk 0,995 -> 0,982 -> 0,977; kelompok header saja 0,979 -> 0,899 -> 0,843; n_headers sendirian 0,803 -> 0,772 -> 0,710.
+- Penafsiran: cap pengumpul menyumbang nyata pada model header, tetapi model bentuk penuh nyaris tidak terganggu (jalan pintas berlapis). Selisih median n_headers phishing vs spam menyusut dari 5 ke 1 setelah K2, jadi "lantai header" sebagian besar terjelaskan oleh keluarga cap tambahan. Asal cap (sistem pengumpul, klien surat, penyimpan mbox) belum diverifikasi.
+- Prediksi vs hasil: kontrol sesuai; keempat prediksi lain meleset (penurunan n_headers sendirian jauh lebih kecil dari perkiraan: 0,031 vs >= 0,05; penurunan model header saja lebih besar: 0,080 vs <= 0,03; model penuh turun 0,013 dan 0,018 vs <= 0,01).
+- Implikasi untuk Tahap 6: membuang satu kelompok fitur tidak cukup; butuh tolok ukur pengganti. Fitur header dan cap tidak masuk model sungguhan tanpa pembenaran.
+- Keterbatasan: satu algoritma dan satu seed; K2 eksploratif; ablasi hanya pada n_headers (nama header tidak dipakai sebagai fitur); angka dari data lama.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
