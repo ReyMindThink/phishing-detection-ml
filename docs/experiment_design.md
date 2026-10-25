@@ -146,6 +146,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi vs hasil: kestabilan, kosakata akun/merek, dan kata milis ham sesuai; fragmen URL tidak muncul; terlewat ke ham tidak dominan (spam 19 vs ham 16); terlewat justru lebih panjang, bukan lebih pendek.
 - Keterbatasan: persen deskriptif, bukan pentingnya fitur; kestabilan lintas lipatan memakai data latih yang tumpang tindih; satu model dan satu seed; hanya 35 email terlewat.
 
+## Hasil Tahap 5d-4 (error analysis phishing terlewat, model teks, data train)
+
+- Skrip: src/error_phishing_missed.py (pipeline sama dengan cv_text.py; assert membuktikan hasil identik: phishing0 terdeteksi 213, terlewat 35). Phishing terlewat 118 dari 2702 (recall 0,956): 20051114 1, phishing0 35, phishing1 6, phishing2 42, phishing3 34; per lipatan 19/27/25/31/16.
+- Email train yang memuat gnupg: ham 27 (easy_ham 18, easy_ham_2 9), phishing 12 (phishing0 11, phishing3 1). Model belajar "gnupg = ham".
+- Kluster phishing0 terlewat yang memuat gnupg: 11 email, semuanya satu group_id (satu grup final, satu lipatan, ukuran grup di train tepat 11, semuanya berlabel phishing), semuanya ditebak ham; median teks 213 karakter, 100% HTML, 0% header milis, median n_headers 19; semuanya juga memuat pgp. Seluruh phishing0 yang memuat gnupg (11 dari 11) terlewat. Di luar phishing0 hanya 1 dari 83 terlewat yang memuat gnupg.
+- Penafsiran: kegagalan karena jalan pintas (kata sumber ham mengalahkan bukti phishing), BUKAN label noise. Hipotesis (belum diperiksa): satu kampanye menambahkan blok tanda tangan PGP. Tanpa kluster, recall phishing0 = 213/237 = 0,899 (hitungan, bukan alasan membuang data). Kesalahan tersisa phishing0 (24): spam 19, ham 5; HTML 15 dari 24 (62,5%).
+- Koreksi: catatan 5d-3 yang mengaitkan kluster ini dengan teks lebih panjang dan kurang HTML salah. Kluster pendek dan 100% HTML; selisih itu berasal dari 24 email terlewat lainnya.
+- Implikasi untuk Tahap 8: lapor recall per email DAN per grup, karena satu grup near-duplicate bisa mewakili banyak kesalahan.
+- Keterbatasan: satu model dan satu seed; sifat kampanye belum diperiksa langsung; test set tidak disentuh.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
