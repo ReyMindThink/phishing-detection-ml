@@ -236,6 +236,18 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi vs hasil: kontrol, OOF per file, dan grup lintas file < 15% sesuai. Meleset: porsi "bersih" >= 85% (hasil 44,6-82,5%); teks phishing3 >= 0,85 (hasil 0,816); bentuk lebih rapuh daripada teks (hasil sebaliknya).
 - Keterbatasan: satu seed; hanya recall kelas positif; n phishing0 248 (galat standar sekitar 2,5 poin); 20051114 (n=26) tidak ditafsirkan; "bersih" dihitung dari group_final (cosine 0,9) sehingga kemiripan di bawah ambang tidak terdeteksi; semua file satu sumber, jadi LOFO bukan bukti generalisasi ke phishing modern.
 
+## Hasil Tahap 6-5 (mengapa phishing3 salah dibaca model teks LOFO, data train)
+
+- Skrip: src/why_phishing3.py. Model teks dilatih tanpa phishing3 (pipeline seperti 5d-2), diuji pada 1404 email phishing3. Kontrol lolos: 249 ke ham dan 10 ke spam (sama dengan 6-4); terdeteksi 1145. Hanya angka agregat, id grup, domain pengirim, dan kata.
+- Konsentrasi per group_final: 249 kesalahan ke ham berasal dari 246 grup berbeda; grup teratas 2 kesalahan (0,8%), 3 teratas 6 (2,4%), 5 teratas 8 (3,2%), 10 teratas 13 (5,2%). Kesalahan TIDAK terkonsentrasi di satu kampanye menurut kunci grup teks (cosine 0,9).
+- Domain pengirim pada kesalahan (deskriptif, bukan fitur): 53.com 70 (28,1%), bbt.com 70 (28,1%), security.53.com 42 (16,9%), ebay.com 18, bankofamerica.com 8, example.com 5, paypal.com 4, suntrust.com 3; 33 domain berbeda. Tiga domain teratas = 182 email (73,1%); 53.com dan security.53.com digabung 112 (45,0%).
+- Kesalahan vs terdeteksi di phishing3: median panjang teks 599 vs 1539 karakter; HTML 95,2% vs 96,6%. Median P(ham) pada kesalahan 0,80; 21,3% punya P(ham) >= 0,9.
+- 25 kata yang paling lebih sering di kesalahan daripada di phishing file lain (persen kesalahan / phishing lain / ham): she 44,6/0,3/3,7; his 42,6/1,0/9,2; had 39,8/4,9/16,2; her 30,5/0,4/3,6; him 28,9/0,6/3,3; paul 25,7/0,3/3,0; annie 23,3/0,1/0,0; said 17,7/0,4/12,5; looked 12,4/0,1/2,0; came 11,6/0,6/3,3; hand 11,2/0,2/3,6. Kata-kata ini bergaya teks naratif dan beririsan dengan anomali 5d-3 (annie, paul, kata ganti).
+- Penafsiran (HIPOTESIS, belum diverifikasi; isi email tidak dibaca): (1) kunci grup teks (cosine 0,9) tidak menangkap kampanye satu merek: email berbeda tulisan tetapi satu merek tersebar di banyak grup dan kemungkinan ada di lipatan latih dan validasi sekaligus, sejalan dengan temuan 4 (87,2% domain pengirim phishing di test ada di train). (2) Kata naratif mungkin potongan prosa sisipan untuk mengelabui filter. (3) Recall phishing3 0,976 di CV acak sebagian berasal dari pola kampanye yang dipelajari dari phishing3 sendiri. Saat phishing3 ditahan, pola itu hilang dan model menebak ham.
+- Prediksi vs hasil: kontrol, domain tunggal >= 20% (28,1%), dan teks lebih pendek sesuai. Meleset: konsentrasi per grup (hasil 246 grup, 3 teratas 2,4%), selisih HTML >= 10 poin (hasil 1,4 poin), median P(ham) < 0,8 (hasil 0,80, tidak terpenuhi).
+- Implikasi: menambah alasan uji kepekaan ambang cosine 0,9 dan leave-brand-out di Tahap 8; laporan recall phishing di CV acak bersifat optimis; kunci grup phishing tanpa domain adalah pilihan sadar dengan harga ini.
+- Keterbatasan: satu seed; daftar kata bersifat petunjuk (n kesalahan 249, banyak kampanye); persen kata deskriptif di train; hipotesis naratif dan merek-tidak-dikenal belum diuji langsung.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
