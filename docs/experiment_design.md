@@ -156,6 +156,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Implikasi untuk Tahap 8: lapor recall per email DAN per grup, karena satu grup near-duplicate bisa mewakili banyak kesalahan.
 - Keterbatasan: satu model dan satu seed; sifat kampanye belum diperiksa langsung; test set tidak disentuh.
 
+## Hasil Tahap 5d-5 (kesalahan phishing per email dan per grup, model teks, data train)
+
+- Skrip: src/error_by_group.py (pipeline sama dengan cv_text.py; assert: phishing terlewat 118). Grup memakai group_final; 1629 grup berisi phishing, 0 di antaranya campur kelas (jadi untuk phishing sama dengan grup teks).
+- Recall phishing: per email 0,956 (2702 email); per grup 0,946 (rata-rata recall tiap grup, bobot sama). Grup terdeteksi semua 1541, sebagian 1 (5 dari 7), terlewat semua 87; 88 grup punya >= 1 kesalahan.
+- Menurut ukuran grup (n_grup / n_email / recall email / recall grup): 1 = 1281/1281/0,938/0,938; 2-5 = 300/819/0,977/0,980; 6-20 = 44/428/0,953/0,948; >20 = 4/174/1,000/1,000 (hanya 4 grup, petunjuk saja).
+- Konsentrasi: grup teratas 11 dari 118 kesalahan (9,3%); 3 teratas 19,5%; 5 teratas 25,4%; 10 teratas 33,9%. 79 grup masing-masing hanya punya 1 kesalahan. Di phishing0, 30 dari 35 kesalahan ada di 6 grup (kampanye terlewat utuh, termasuk kluster gnupg 11 email). phishing2 (42) dan phishing3 (34) kesalahannya tersebar di email tunggal atau grup kecil.
+- Prediksi vs hasil: recall per grup diprediksi LEBIH TINGGI dari per email, hasilnya lebih rendah (0,946 vs 0,956; kesalahan banyak berupa email tunggal, bukan menumpuk di grup besar). Konsentrasi 5 teratas (>= 25%), jumlah grup ber-kesalahan (<= 100), dan grup tunggal lebih lemah dari grup > 20 sesuai prediksi.
+- Penafsiran: ada dua pola kesalahan (kampanye utuh terlewat di phishing0; email tunggal tersebar di phishing2 dan phishing3). Phishing "unik" (grup tunggal, 79% grup, 47% email) lebih sulit (0,938). Recall per email sedikit lebih optimis daripada per grup.
+- Keterbatasan: satu model dan satu seed; grup > 20 hanya 4; penyebab kesalahan email tunggal belum dianalisis; angka hanya untuk data train lama, bukan phishing modern.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
