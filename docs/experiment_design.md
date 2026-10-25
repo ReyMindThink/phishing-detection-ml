@@ -175,6 +175,16 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi vs hasil: "Re:" , ancaman, aksi spam, selisih antar file, dan rasio huruf besar sesuai. Meleset: awalan "[" (ham 15,5 bukan >= 20; spam 5,2 bukan < 5; phishing 2,8 bukan < 2) dan aksi phishing HTML (51,2 bukan >= 55). Penyebab 2,8% phishing berawalan "[" (phishing1 8,6%, phishing2 6,3%) belum diselidiki.
 - Keterbatasan: hanya deskriptif, tanpa ukuran nilai tambah bagi model; daftar kata satu bahasa; ham HTML hanya 142 (124 hard_ham).
 
+## Hasil Tahap 5e-1 (analisis nama header, diagnostik, data train)
+
+- Skrip: src/eda_header_names.py. Hanya NAMA header (kolom header_names) dan angka agregat; isi header tidak dibaca. 126 nama muncul di >= 20 email train. header_names tetap hanya diagnostik, BUKAN fitur model.
+- `status`: 100,0% phishing (100,0% di tiap file Nazario besar), 0,0% ham, 0,0% spam. Satu-satunya nama yang memenuhi kriteria kandidat terkunci (>= 90% phishing, < 20% ham dan < 20% spam). Dugaan (BELUM diverifikasi): header Status ditambahkan program surat atau sistem penyimpan saat menulis ke mbox, jadi penanda korpus. Menurut konstruksi, n_headers ikut menghitungnya (hipotesis, belum diuji).
+- Nama lain yang nol di ham dan spam tetapi ada di phishing: x-original-to 82,2% (per file 100,0/99,6/100,0/65,9), x-uid 73,8% (99,6/99,6/52,2/76,3), lines dan content-length 24,1% (0,0/46,1/1,7/35,0), x-status 86,5% (ham 0,6, spam 6,5), x-spam-level 15,8% dan x-spam-status 15,5% (x-spam-status per file 0,8/56,6/21,4/6,3). Selisih antar file besar, jadi header juga mengenali file/era Nazario.
+- Header milis paling "ham": precedence 75,2% ham vs 0,8% phishing, list-id 70,6% vs 0,1%, x-mailman-version 69,8% vs 0,1%. Header utas: in-reply-to 46,1% ham, 0,0% spam, 1,0% phishing; references 36,3%, 0,0%, 1,1% (selaras dengan "Re:" di 5d-6).
+- Lantai header (min n_headers / min n_unique): phishing0 16/14, phishing1 6/6, phishing2 14/13, phishing3 16/12; spam 10/8 dan 9/6; ham 6/6 dan 9/7. Setelah status dibuang, min n_unique phishing 13/5/12/11. Median n_unique: ham 23, spam 13, phishing 19 (18 tanpa status). Selisih phishing-spam 6,0 -> 5,0 (menyusut 17%).
+- Prediksi vs hasil: kandidat >= 1 nama, selisih antar file >= 30 poin, dan header milis paling ham sesuai. Prediksi "selisih menyusut >= 50%" meleset (17%) karena kandidat hanya satu nama. Perhitungan kasar (rata-rata lima nama kandidat luas = sekitar 3,0 header per email phishing) menunjukkan dampak lebih besar bila semua cap pengumpul dibuang; ini hipotesis setelah melihat hasil, belum diukur.
+- Keterbatasan: persen dihitung per kelas di train; asal-usul header (siapa yang menambah) belum diverifikasi; "lantai" n_unique tidak sepenuhnya terjelaskan; tanpa model.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
