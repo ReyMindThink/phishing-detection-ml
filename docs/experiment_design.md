@@ -300,6 +300,15 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Status: model belum disentuh test set. Bukti nilai tambah di luar jalan pintas belum ada (satu sumber phishing). Untuk Tahap 8: putuskan apakah ambang 0,5040 (dari model yang dilatih 80% train) dipakai langsung pada model yang dilatih 100% train; wajib uji kepekaan, kalibrasi, estimasi precision pada prevalensi realistis, MeAJOR, phishing modern, dan ablasi link.
 - Keterbatasan: satu seed dan satu arsitektur fitur (teks saja); tuning dan penilaian di data yang sama; 9 dari 16 merek LOBO jenuh di 1,000; skrip 7-1 sampai 7-4 menyalin kode pemuat data (dirapikan di Tahap 13).
 
+## Rencana Tahap 8-0 (dikunci sebelum hasil; tanpa test)
+
+- Model akhir (opsi A): TF-IDF body_text + LogReg C=1 seed 42, dilatih di 100% train; ambang tetap 0,5040 (target recall OOF 0,93, 7-1), tidak disetel ulang di test. Kalibrasi (monoton, tidak mengubah keputusan) dipindah ke Tahap 9-10 untuk skor Low/Medium/High.
+- Cek pergeseran skala ambang (src/shift_check.py, data train): model 60% vs 80% data latih pada ambang tetap. Prediksi: selisih recall <= 0,02, lebih rendah di 60%. Aturan: |recall80 - rata-rata recall60| <= 0,02 maka A; lebih besar maka B (rata-rata 5 model lipatan). Batas: ekstrapolasi 60->80 ke 100% hanya perkiraan kasar.
+- Aturan 8-2 (link masuk model akhir hanya bila SEMUA terpenuhi): precision pada recall 0,93 naik >= 0,005; LOBO16 tidak turun > 0,01; salah tangkap ham tidak bertambah > 5 email. Selain itu model tetap teks-saja.
+- Hasil 8-3 (MeAJOR) dan 8-4 (phishing modern) tidak boleh mengubah model atau ambang; dilaporkan apa adanya.
+- Prediksi 8-5 (pada ambang 0,5040, tentatif): recall phishing 0,89-0,95 (galat standar n=676 sekitar 0,010), precision 0,96-0,99, PR-AUC >= 0,99. PR-AUC >= 0,99 sudah dipastikan oleh jalan pintas sumber (model bentuk 0,995), jadi test TIDAK bisa menepis kecurigaan kebocoran. Target >= 0,90 terpenuhi bila estimasi titik >= 0,90; interval Wilson dilaporkan; skrip test dijalankan SEKALI.
+- Koreksi tertunda: "87,2% (424 dari 504 = 84,1%)" di dua tempat di dokumen ini belum dihitung ulang karena butuh domain email test; dihitung di 8-5. Sampai itu, angka 87,2% belum dapat dipercaya.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
