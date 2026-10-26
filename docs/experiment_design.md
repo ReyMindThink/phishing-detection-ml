@@ -317,6 +317,14 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Keterbatasan: ekstrapolasi 60% ke 80% ke 100% hanya perkiraan; satu seed; ambang dan penilaian dari OOF yang sama; B tidak punya cek skala sendiri; Tahap 9-10 harus membawa 5 model (kosakata berbeda per lipatan). Di 8-5 model 100% (A) boleh dilaporkan sebagai diagnostik pada satu kali jalan yang sama, tanpa dipakai memilih.
 - Koreksi pembacaan (dari kode make_splits.py, angka belum dihitung ulang): satuan "87,2%" dan "424 dari 504" di dokumen ini adalah EMAIL phishing test, bukan domain. 87,2% = email berdomain yang domainnya ada di train (semua domain); 424 dari 504 = hanya email berdomain layak (bukan generik/jembatan) = 84,1%. Dua penyebut berbeda, bukan konflik angka.
 
+## Rencana Tahap 8-1 (uji kepekaan split; dikunci sebelum hasil; data train)
+
+- Skrip src/sensitivity_split.py. Skenario, masing-masing mengubah SATU hal dari split resmi: S0 resmi (kontrol); R1 dan R2 = grup resmi dengan seed lipatan 43 dan 44 (ukuran noise undian lipatan); C08 dan C07 = ambang cosine 0,8 dan 0,7; J10 dan J02 = batas grup ham terbesar 10% dan 2% lewat jalur greedy jembatan (jalur 5% harus menghasilkan 5 jembatan resmi). Model tetap TF-IDF + LogReg C=1; test tidak dipakai untuk model.
+- Metrik dan aturan: PR-AUC phishing dan precision pada recall OOF 0,93 (ambang dihitung ulang per skenario). Noise = selisih terbesar |R1/R2 - S0|. Skenario PEKA bila |selisih| >= max(0,005; 2 x noise) pada salah satu metrik. Bila grup terbesar suatu kelas > 15% dari kelas itu di train: ditandai GRUP BESAR, dilaporkan tetapi tidak ditafsirkan. Bila lipatan atau model gagal dibentuk: dilaporkan sebagai temuan.
+- Prediksi: kontrol S0 = PR-AUC 0,994, macro-F1 0,955, 2513/2549. Noise |dPR-AUC| <= 0,002 dan |dPrecision| <= 0,006. C08 dan C07 lebih rendah (PR-AUC -0,001 sampai -0,006; precision -0,002 sampai -0,02; C07 paling besar bila hipotesis keluarga merek/kit benar). J10 dan J02 tidak peka.
+- Tafsir: bila C08/C07 PEKA dan lebih rendah, angka OOF resmi adalah batas atas sebesar selisih itu. Bila tidak peka, split tahan terhadap pilihan ini untuk model teks, BUKAN bukti tidak ada kebocoran keluarga atau kit.
+- Batas: teks test ikut membangun graf grup (struktural, seperti produksi; Kontrol 1 membuktikan hasilnya identik); noise hanya dari dua seed; kemiripan train-test di bawah cosine 0,9 tidak diuji (ditunda ke 8-5, diagnostik agregat); pemilihan jembatan alternatif (mis. berdasar jumlah email) tidak diuji.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
