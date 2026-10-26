@@ -292,6 +292,14 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Penafsiran (hipotesis, belum diuji): bank saudara di data latih membawa pola yang membantu saat satu bank ditahan, jadi yang bocor di CV acak kemungkinan keluarga merek atau kit, bukan satu merek. Kenaikan pelan terhadap C pada tiga bank tidak dipakai memilih C (post hoc, satu keluarga, ambang berbeda per C). Pada C=0,1 tp 2526 > 2513 kemungkinan karena skor sama (ties); belum diperiksa.
 - Keterbatasan: tuning dan penilaian memakai data yang sama (bukan kinerja akhir; penilaian akhir hanya dari test di Tahap 8); selisih antar C >= 1 dalam noise (salah tangkap 36 vs 29 dari sekitar 2545); satu seed; tiga bank = satu keluarga, n=212; hanya recall di LOBO.
 
+## Kesimpulan Tahap 7 (baseline dan perbandingan model teks-saja; data train)
+
+- Model kandidat: TF-IDF body_text + LogReg C=1 (seed 42), ambang 0,5040 dari target recall OOF 0,93 (opsi B, 7-1). Di OOF train: recall email 0,930, recall grup 0,908, precision 0,986 (2513/2549), salah tangkap ham/spam 5/31, PR-AUC 0,994, macro-F1 argmax 0,955, recall per lipatan 0,900-0,948. Ini batas atas karena ambang dipilih dan dinilai pada OOF yang sama.
+- Pembanding: RandomForest tidak lebih baik (PR-AUC 0,992 vs 0,994, membaik 1 dari 5 lipatan; aturan terkunci tidak terpenuhi). Tuning C (0,1 sampai 30) tidak menghasilkan kandidat menurut aturan terkunci, jadi C=1 dipertahankan. Beberapa seed untuk RF dilewati: LogReg deterministik dan RF kalah di 4 dari 5 lipatan, jadi variasi seed kecil kemungkinan membalik keputusan (belum diukur).
+- Uji merek (eksploratif): leave-one-brand-out dengan purge pada 16 merek: recall 0,972 (OOF) -> 0,939 (LOBO); terkonsentrasi di tiga bank (53.com 0,443; bbt.com 0,837; security.53.com 0,766). Tiga bank ditahan bersamaan: 0,245. Hipotesis (belum diuji): yang bocor di CV acak adalah keluarga merek atau kit, bukan satu merek.
+- Status: model belum disentuh test set. Bukti nilai tambah di luar jalan pintas belum ada (satu sumber phishing). Untuk Tahap 8: putuskan apakah ambang 0,5040 (dari model yang dilatih 80% train) dipakai langsung pada model yang dilatih 100% train; wajib uji kepekaan, kalibrasi, estimasi precision pada prevalensi realistis, MeAJOR, phishing modern, dan ablasi link.
+- Keterbatasan: satu seed dan satu arsitektur fitur (teks saja); tuning dan penilaian di data yang sama; 9 dari 16 merek LOBO jenuh di 1,000; skrip 7-1 sampai 7-4 menyalin kode pemuat data (dirapikan di Tahap 13).
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
