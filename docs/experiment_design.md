@@ -348,6 +348,13 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi: link TIDAK lolos (precision +0,000 sampai +0,004; PR-AUC sekitar 0,994). Kontrol acak: |selisih precision| <= 0,002. Recall pada ambang tetap 0,5040 sekitar 0,93 untuk ketiga model.
 - Batas: fitur link sebagian menandai email HTML (phishing 94%, ham 4%), jadi jalan pintas sumber; ham HTML hanya 142 di train; 3 bank gabungan dan recall pada ambang tetap bersifat eksploratif; satu seed, satu cara menggabungkan fitur (LogReg linear).
 
+## Hasil Tahap 8-3a (model beku)
+
+- Model akhir (opsi B, dikunci di 8-0): 5 model TF-IDF + LogReg C=1 teks-saja yang dilatih per lipatan di train; keputusan = rata-rata P(phishing) >= ambang eksak 0,5039704393178396 (target recall OOF 0,93; versi bulat 0,5040 menandai 1 email lebih sedikit), selain itu argmax ham/spam dari rata-rata. Prediksi rentang ambang (0,50395-0,50400) benar.
+- Kontrol: OOF 3245/1317/2584 dan 2513/2549 terproduksi ulang; model yang disimpan dimuat ulang lewat jalur terverifikasi dan mereproduksi OOF (np.allclose).
+- Keamanan: model disimpan di models/ (diabaikan Git); docs/model_manifest.json (dikomit) berisi SHA256 tiap berkas, ambang eksak, versi library, dan SHA256 daftar id train; src/frozen_model.py memverifikasi hash SEBELUM joblib.load (tes: berkas yang diubah ditolak sebelum dimuat).
+- Batas: hash di manifest spesifik lingkungan penulis (versi tercatat); pihak lain membekukan ulang dengan python -m src.freeze_model; hash melindungi integritas berkas, bukan kebenaran manifest; skala rata-rata 5 model belum punya cek sendiri (8-0); model akhir tidak dilatih di 100% train.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
