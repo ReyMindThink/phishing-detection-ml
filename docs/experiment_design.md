@@ -333,6 +333,13 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Eksploratif (di luar aturan terkunci): ambang recall 0,93 bergeser turun makin ketat grupnya (0,5040; C08 0,4978; C07 0,4889; rentang antar seed 0,5006-0,5061), jadi ambang tetap 0,5040 bisa memberi recall < 0,93 pada data yang lebih asing; belum diukur karena recall pada ambang tetap tidak dicetak. Macro-F1 lebih berisik (0,950-0,955 antar seed; C07 0,946) dan tidak masuk aturan. tp 2514-2524 > 2513 pada R1, C08, J02 kemungkinan skor sama (ties), belum diperiksa.
 - Batas: noise hanya dari dua seed; satu model (teks + LogReg C=1); metrik berfokus phishing sehingga efek jembatan pada ham/spam kurang terlihat; kemiripan train-test di bawah cosine 0,9 ditunda ke 8-5; pemilihan jembatan alternatif tidak diuji.
 
+## Rencana Tahap 8-2 (ablasi fitur link; dikunci sebelum hasil; data train)
+
+- Skrip src/ablate_link.py. Satu perubahan pada model teks (TF-IDF + LogReg C=1): tambah 10 fitur link numerik (n_links, n_link_domains, n_link_mismatch, n_link_ip, n_link_userinfo, n_link_punycode, max_url_len, max_host_labels, n_images, n_forms; log1p lalu standardisasi). domains_link_defanged (teks) tidak dipakai. Kontrol: kolom link diacak antar baris (seed 42).
+- Aturan 8-0 (SEMUA harus terpenuhi agar link masuk model akhir): precision pada recall OOF 0,93 naik >= 0,005; recall LOBO16 (pada ambang model itu sendiri) tidak turun > 0,01; salah tangkap ham di OOF tidak naik > 5 email; tanpa peringatan konvergensi. Tambahan: kontrol acak valid hanya bila |selisih precision| < 0,005; bila tidak valid, hasil tidak ditafsirkan.
+- Prediksi: link TIDAK lolos (precision +0,000 sampai +0,004; PR-AUC sekitar 0,994). Kontrol acak: |selisih precision| <= 0,002. Recall pada ambang tetap 0,5040 sekitar 0,93 untuk ketiga model.
+- Batas: fitur link sebagian menandai email HTML (phishing 94%, ham 4%), jadi jalan pintas sumber; ham HTML hanya 142 di train; 3 bank gabungan dan recall pada ambang tetap bersifat eksploratif; satu seed, satu cara menggabungkan fitur (LogReg linear).
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
