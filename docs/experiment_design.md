@@ -355,6 +355,13 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Keamanan: model disimpan di models/ (diabaikan Git); docs/model_manifest.json (dikomit) berisi SHA256 tiap berkas, ambang eksak, versi library, dan SHA256 daftar id train; src/frozen_model.py memverifikasi hash SEBELUM joblib.load (tes: berkas yang diubah ditolak sebelum dimuat).
 - Batas: hash di manifest spesifik lingkungan penulis (versi tercatat); pihak lain membekukan ulang dengan python -m src.freeze_model; hash melindungi integritas berkas, bukan kebenaran manifest; skala rata-rata 5 model belum punya cek sendiri (8-0); model akhir tidak dilatih di 100% train.
 
+## Rencana Tahap 8-3-1 (diagnosis format MeAJOR; dikunci sebelum hasil; tanpa model dan tanpa test)
+
+- Fakta terverifikasi (peek_meajor dan peek_meajor_crosstab, 27 Okt 2026): 108685 baris x 20 kolom; label 0 = 60650, label 1 = 48034, 1 baris tanpa source/label/body (dibuang); sumber hanya trec5 (49583), trec6 (15005), trec7 (44096); label 1 = spam TREC menurut SOURCES.md, BUKAN phishing seperti klaim halaman Zenodo. Tahun dari header Date (bisa salah; ada nilai 1889-2102): trec5 sekitar 2001-2002, trec6 sebagian besar 1998-2006, trec7 sekitar 2007; bahasa en/en;en 95,2%. Koreksi: ringkasan lama menyebut MeAJOR belum diunduh; berkas sudah ada di data/raw/ (diabaikan Git, .gitignore baris 12).
+- Skrip src/meajor_diagnose.py (43 baris, hanya agregat): persen baris yang memuat token anonim (pola kurung siku huruf kapital, mis. [URL]), tag HTML, "http(s)://" mentah, dan body < 20 karakter, per label dan per sumber; nama token teratas (>= 50 baris); panjang body. Belum menyentuh model, data latih, atau test.
+- Aturan keputusan (dikunci): bila baris bertag HTML >= 5% (semua baris), evaluasi 8-3 menjalankan html_ke_teks (src/email_parser) pada body, sama seperti pembuatan data latih; bila < 5%, body dipakai apa adanya. Bila token anonim ada di >= 5% baris, setiap token diganti satu spasi (bukan kata pengganti). Aturan ini tidak diubah setelah melihat prediksi model.
+- Prediksi: token anonim di >= 50% baris, tag HTML < 5%, "http" mentah < 5%, body < 20 karakter < 2%. Batas: mengganti token menghilangkan sinyal URL yang ada di teks latih, jadi angka 8-3 bercampur dengan pergeseran format dan tidak bisa dibaca sebagai false positive murni; tidak ada kontrol format di sisi data latih.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
