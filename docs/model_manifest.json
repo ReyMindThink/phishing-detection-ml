@@ -1,0 +1,42 @@
+{
+  "tahap": "8-3a",
+  "model": "TF-IDF body_text (token huruf >= 3, min_df 3, 20000 fitur, sublinear_tf) + LogReg C=1, seed 42; teks saja",
+  "aturan": "rata-rata P dari 5 model lipatan; phishing bila P(phishing) >= ambang, selain itu ham/spam = argmax rata-rata",
+  "target_recall_oof": 0.93,
+  "ambang": 0.5039704393178396,
+  "sha256_id_train": "b4bfcafa85629daad0b7b1a6e8da82798aeefe5bd33a322d8b02f0da8dd33508",
+  "versi": {
+    "python": "3.14.3",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1"
+  },
+  "models": [
+    {
+      "path": "models/fold0.joblib",
+      "sha256": "27ebc383021caf753e7181cc512bd588f521763166e271aab69093a8db5b2cd3",
+      "n_latih": 5950
+    },
+    {
+      "path": "models/fold1.joblib",
+      "sha256": "fbdcd509788d50463fbab97dbefee3df1c478dd7f026ccb821a8af2664ba8127",
+      "n_latih": 5950
+    },
+    {
+      "path": "models/fold2.joblib",
+      "sha256": "0ca8193873bff265e9854159ddd86b51118cd6e9e729c5a16b3d274e34c0162f",
+      "n_latih": 5951
+    },
+    {
+      "path": "models/fold3.joblib",
+      "sha256": "5844df5baa410fbd179d52e8a9e2f802be2d5a8d395fec71bc19ddb3592cfd25",
+      "n_latih": 5950
+    },
+    {
+      "path": "models/fold4.joblib",
+      "sha256": "86f85db6e163acec2184b9813c7f6cc797a2efc2e40425c78a52b8b2b2c8e08b",
+      "n_latih": 5951
+    }
+  ]
+}
