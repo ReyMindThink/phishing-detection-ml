@@ -325,6 +325,14 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Tafsir: bila C08/C07 PEKA dan lebih rendah, angka OOF resmi adalah batas atas sebesar selisih itu. Bila tidak peka, split tahan terhadap pilihan ini untuk model teks, BUKAN bukti tidak ada kebocoran keluarga atau kit.
 - Batas: teks test ikut membangun graf grup (struktural, seperti produksi; Kontrol 1 membuktikan hasilnya identik); noise hanya dari dua seed; kemiripan train-test di bawah cosine 0,9 tidak diuji (ditunda ke 8-5, diagnostik agregat); pemilihan jembatan alternatif (mis. berdasar jumlah email) tidak diuji.
 
+## Hasil Tahap 8-1 (uji kepekaan split, data train)
+
+- Skrip src/sensitivity_split.py; Kontrol 1-3 lolos (group_id, group_final, lipatan resmi, dan OOF 7-1 terproduksi ulang; jalur greedy: 2/5/10 jembatan untuk batas grup ham 10%/5%/2%). Grup resmi di train: 3809.
+- PR-AUC / precision pada recall OOF 0,93: S0 0,9941 / 0,986; noise seed lipatan (R1, R2) <= 0,0001 / <= 0,0008; C08 (cosine 0,8) 0,9935 / 0,984; C07 (cosine 0,7; grup ham terbesar 14,6%) 0,9931 / 0,983; J10 0,9939 / 0,985; J02 0,9939 / 0,985. Semua skenario tidak peka (batas 0,005). Prediksi benar untuk noise dan J10/J02; C08 turun lebih kecil dari prediksi (-0,0006 / -0,0015).
+- Penafsiran (hipotesis): OOF model teks tahan terhadap pengetatan grup berbasis kemiripan teks sampai cosine 0,7 dan terhadap 2-10 jembatan, jadi kebocoran near-duplicate bukan penyebab utama angka tinggi. Ini TIDAK menyentuh kebocoran tingkat merek/kit (LOBO 7-3 dan 7-4 tetap temuan terpisah).
+- Eksploratif (di luar aturan terkunci): ambang recall 0,93 bergeser turun makin ketat grupnya (0,5040; C08 0,4978; C07 0,4889; rentang antar seed 0,5006-0,5061), jadi ambang tetap 0,5040 bisa memberi recall < 0,93 pada data yang lebih asing; belum diukur karena recall pada ambang tetap tidak dicetak. Macro-F1 lebih berisik (0,950-0,955 antar seed; C07 0,946) dan tidak masuk aturan. tp 2514-2524 > 2513 pada R1, C08, J02 kemungkinan skor sama (ties), belum diperiksa.
+- Batas: noise hanya dari dua seed; satu model (teks + LogReg C=1); metrik berfokus phishing sehingga efek jembatan pada ham/spam kurang terlihat; kemiripan train-test di bawah cosine 0,9 ditunda ke 8-5; pemilihan jembatan alternatif tidak diuji.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
