@@ -391,6 +391,19 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi (dikunci): recall phishing modern pada ambang eksak 0,5039704393178396, per email unik (hash isi), jauh di bawah target: titik tengah 0,55, rentang 0,30-0,75, peluang >= 0,90 kurang dari 5%. Alasan (hipotesis): era, merek, bahasa, dan gaya berubah; tiga bank tertahan memberi 0,245 dan ambang bergeser pada data asing (8-1). Pembacaan (dikunci): >= 0,90 "tahan terhadap phishing modern dari pengumpul yang sama"; 0,70-0,90 "sebagian"; < 0,70 "klaim README dibatasi pada phishing klasik 2002-2007". Aturan rinci (baris kosong, duplikat) dikunci di 8-4-2 SEBELUM model dijalankan.
 - Batas: hanya recall (tanpa ham modern, precision tidak terukur); kemungkinan pengumpul yang sama (Nazario), jadi tidak independen penuh; kemiripan dengan train belum diukur; model dan ambang tidak diubah apa pun hasilnya; pelatihan ulang dengan data modern adalah v2.
 
+## Hasil Tahap 8-4-1 (ekstraksi Nazario modern)
+
+- Dijalankan di Docker (--rm) dengan src/extract_nazario_modern.py (komit 09531e5). Pemeriksaan HEAD: 11 file HTTP 200, Content-Length 8815568 sampai 18769863 byte, cocok dengan daftar ("M" di daftar = MiB). Tidak ada model atau test yang disentuh.
+- Hasil: 3466 email (2015 307, 2016 494, 2017 325, 2018 288, 2019 243, 2020 158, 2021 101, 2022 247, 2023 419, 2024 403, 2025 481); 0 gagal; body_text kosong 84 (2,4%; terbanyak 2016: 49 dari 494 = 9,9%; 2021, 2023, 2024: 0). CSV 7898810 byte di data/interim/nazario_modern/ (diabaikan Git).
+- Penafsiran (hipotesis, belum diperiksa): body kosong kemungkinan email berisi gambar atau lampiran yang tidak di-decode parser; dihitung terpisah di 8-4-2. Batas: sumber tunggal Nazario; hash berkas unduhan tidak dicatat (utang dokumentasi SOURCES.md).
+
+## Rencana Tahap 8-4-2 (uji recall phishing modern pada model beku; dikunci sebelum hasil; tanpa mengubah model atau ambang)
+
+- Skrip src/eval_nazario_modern.py (111 baris; python -m src.eval_nazario_modern): test DIBUANG; KONTROL OOF 3245/1317/2584 dan 2513/2549, serta 3466 baris dengan 84 body kosong; model beku lewat muat_ensemble; ambang eksak. Unik = content_hash pertama (urutan file 2015 sampai 2025).
+- Tiga varian populasi: A (primer) = unik, body tidak kosong, cosine maks ke train < 0,9 (TF-IDF min_df 2, sublinear, 50000 fitur, dilatih di body_text train); B = unik tidak kosong (termasuk yang mirip train); C = semua unik (body kosong ikut dan dinilai model apa adanya). Pembacaan terkunci memakai angka TERENDAH dari A/B/C: >= 0,90 "tahan terhadap phishing modern dari pengumpul yang sama"; 0,70-0,90 "sebagian"; < 0,70 "klaim README dibatasi pada phishing klasik 2002-2007". Dilaporkan: Wilson 95%; recall per file (\* bila n < 30); recall rata-rata per grup (komponen terhubung cosine >= 0,9 di dalam set modern; tiap grup bobot sama) dan ukuran grup terbesar; distribusi putusan; median P(phishing); recall pada ambang 0,2/0,3/0,4/0,6/0,7 hanya deskriptif (bukan penyetelan); median jumlah kata vs train phishing.
+- Prediksi (dikunci; prediksi recall di Rencana 8-4 tidak diubah: titik tengah 0,55, rentang 0,30-0,75, peluang >= 0,90 kurang dari 5%): duplikat exact 10-40% dari 3466 baris; email unik tidak kosong dengan cosine >= 0,9 ke train kurang dari 5%; recall rata-rata per grup <= recall per email; median P(phishing) varian A di bawah 0,976 (median OOF train, [DARI RINGKASAN]). Tidak ada rerun; tidak ada pelatihan ulang.
+- Batas: hanya recall (tanpa ham modern; precision tidak terukur); satu pengumpul (Nazario), jadi bukan uji independen penuh; recall pada ambang eksak adalah satu titik kurva; hasil TIDAK mengubah model atau ambang dan tidak menggantikan OOF/LOBO.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
