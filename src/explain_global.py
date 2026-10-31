@@ -28,14 +28,17 @@ def kontrol_shap(model, X_uji, teks_latar):
     vec, clf, kls = bagian(model)
     ip = kls.index("phishing")
     bg, Xd = vec.transform(teks_latar).toarray(), X_uji.toarray()
-    sv = shap.LinearExplainer(clf, bg).shap_values(Xd)
+    masker = shap.maskers.Independent(bg, max_samples=N_LATAR)   # tanpa subsampling diam-diam
+    sv = shap.LinearExplainer(clf, masker).shap_values(Xd)
     print("bentuk keluaran SHAP:", type(sv).__name__, getattr(sv, "shape", None))
     if isinstance(sv, list):
         sv = sv[ip]
     elif sv.ndim == 3:
         sv = sv[:, :, ip] if sv.shape[-1] == len(kls) else sv[ip]
     assert sv.shape == Xd.shape, sv.shape
-    assert np.allclose(sv, clf.coef_[ip] * (Xd - bg.mean(axis=0)), atol=1e-6), "kontrol (b) gagal"
+    ref = clf.coef_[ip] * (Xd - bg.mean(axis=0))
+    print("selisih maks |SHAP - rumus|: %.3g" % np.abs(sv - ref).max())
+    assert np.allclose(sv, ref, atol=1e-6), "kontrol (b) gagal"
 
 
 def konsistensi(models):
