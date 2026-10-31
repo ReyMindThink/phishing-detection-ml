@@ -68,9 +68,10 @@ def jalankan(teks, y, fold, ambang, kontrol=True):
         cm = confusion_matrix(y, np.array(URUTAN)[oof["BASE"].argmax(axis=1)], labels=URUTAN)
         assert np.diag(cm).tolist() == [3245, 1317, 2584], np.diag(cm).tolist()
         t = float(np.sort(oof["BASE"][ph, 2])[::-1][int(np.ceil(0.93 * ph.sum())) - 1])
-        tp, n_pred = int(((oof["BASE"][:, 2] >= ambang) & ph).sum()), int((oof["BASE"][:, 2] >= ambang).sum())
+        tp, n_pred = int(((oof["BASE"][:, 2] >= t) & ph).sum()), int((oof["BASE"][:, 2] >= t).sum())
         assert abs(t - ambang) < 1e-9 and (tp, n_pred) == (2513, 2549), (t, tp, n_pred)
-        print("KONTROL OK: BASE = OOF 3245/1317/2584, ambang %.16f, tp/n_pred 2513/2549" % t)
+        print("KONTROL OK: BASE = OOF 3245/1317/2584, ambang %.16f (selisih ke manifest %.2g), tp/n_pred 2513/2549" % (t, t - ambang))
+        ambang = t   # ambang tetap untuk semua konfigurasi = ambang turunan ulang (selisih ke manifest < 1e-9)
     M = {n: metrik(P, ph, ambang) for n, P in oof.items()}
     b = M["BASE"]
     print("n phishing = %d, n ham+spam = %d; ambang beku %.16f" % (ph.sum(), (~ph).sum(), ambang))
