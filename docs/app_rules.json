@@ -24,5 +24,12 @@
       "n_phishing": 27
     }
   },
-  "catatan": "diturunkan dari data TRAIN; pita indikatif; skor bukan probabilitas terkalibrasi"
+  "catatan": "diturunkan dari data TRAIN; pita indikatif; skor bukan probabilitas terkalibrasi",
+  "gerbang_v2": {
+    "persentil": 5,
+    "n_min_kata_dikenal": 16,
+    "c_min_cakupan": 0.77,
+    "lolos_train_persen": 92.89,
+    "catatan": "dirancang setelah melihat hasil 9-3; eksploratif; hanya kosakata Inggris yang dikenal, bukan makna"
+  }
 }
