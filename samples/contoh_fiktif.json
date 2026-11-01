@@ -1,0 +1,50 @@
+[
+  { "id": "E01", "kelompok": "kosong", "teks": "" },
+  { "id": "E02", "kelompok": "spasi", "teks": "   " },
+  { "id": "E03", "kelompok": "angka", "teks": "12345" },
+  {
+    "id": "E04",
+    "kelompok": "indonesia_sah",
+    "teks": "Halo, rapat tim besok jam sepuluh di ruang tiga. Mohon bawa laporan mingguan dan catatan dari pertemuan sebelumnya. Terima kasih banyak."
+  },
+  {
+    "id": "E05",
+    "kelompok": "indonesia_penipuan_fiktif",
+    "teks": "[CONTOH FIKTIF] Yth. Pelanggan, akun Anda akan diblokir hari ini. Segera verifikasi data Anda melalui hxxps://example[.]com/verifikasi agar akun tetap aktif."
+  },
+  {
+    "id": "E06",
+    "kelompok": "indonesia_campur_inggris",
+    "teks": "Selamat siang, bersama email ini saya lampirkan invoice bulan Oktober untuk project website. Mohon konfirmasi jika sudah diterima. Salam, Budi."
+  },
+  {
+    "id": "E07",
+    "kelompok": "inggris_pendek",
+    "teks": "Thanks, see you tomorrow."
+  },
+  {
+    "id": "E08",
+    "kelompok": "inggris_sah",
+    "teks": "Hi team, just a reminder that the quarterly planning meeting is scheduled for Thursday afternoon in the main conference room. Please review the attached agenda and send me any items you would like to add before Wednesday evening. Lunch will be provided. Thanks, Sarah"
+  },
+  {
+    "id": "E09",
+    "kelompok": "inggris_penipuan_fiktif",
+    "teks": "[CONTOH FIKTIF] Dear customer, we noticed unusual activity on your account. To keep your account active, please verify your information today by visiting hxxps://example[.]com/verify. If you do not respond, your account may be suspended. Thank you, Security Team"
+  },
+  {
+    "id": "E10",
+    "kelompok": "inggris_spam_fiktif",
+    "teks": "[CONTOH FIKTIF] Limited time offer! Buy now and save big on our newest products. Click here to order today and get free shipping on every order. To stop receiving these messages, reply with the word remove."
+  },
+  {
+    "id": "E11",
+    "kelompok": "keterbatasan_inggris_sah",
+    "teks": "Hi all, a quick note that the bank account for our club has been updated. Please send your online payment for the customer appreciation event to the new account by Friday. Thanks, Tom"
+  },
+  {
+    "id": "E12",
+    "kelompok": "inggris_phishing_pendek_fiktif",
+    "teks": "[CONTOH FIKTIF] Your package could not be delivered. Click hxxps://example[.]com/track to reschedule."
+  }
+]
