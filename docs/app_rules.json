@@ -1,0 +1,28 @@
+{
+  "tahap": "9-3",
+  "ambang_resmi": 0.5039704393178396,
+  "t_med": 0.16823219007486895,
+  "target_recall_medium": 0.99,
+  "n_min_kata_dikenal": 1,
+  "c_min_cakupan": 0.0,
+  "n_kata_dikenal": 11168,
+  "token_pattern": "(?u)\\b[a-zA-Z]{3,}\\b",
+  "pita_oof_train": {
+    "HIGH": {
+      "n_ham": 5,
+      "n_spam": 31,
+      "n_phishing": 2513
+    },
+    "MEDIUM": {
+      "n_ham": 142,
+      "n_spam": 211,
+      "n_phishing": 162
+    },
+    "LOW": {
+      "n_ham": 3141,
+      "n_spam": 1206,
+      "n_phishing": 27
+    }
+  },
+  "catatan": "diturunkan dari data TRAIN; pita indikatif; skor bukan probabilitas terkalibrasi"
+}
