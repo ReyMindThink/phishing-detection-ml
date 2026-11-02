@@ -548,6 +548,13 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Temuan (hipotesis berlabel): pada contoh keterbatasan kata account menyumbang 0,773 dari jumlah 2,27 kontribusi positif sepuluh kata teratas, jadi model peka pada kosakata akun dan bank, bukan konteks; kata biasa dan nama (the, for, thanks, tom) menurunkan skor, HIPOTESIS konsisten dengan penanda sumber di 9-1 dan belum diuji; daftar kata mendesak (manual, tidak tervalidasi) menandai alert dari kode skrip; log server hanya memuat metode dan jalur, bukan isi.
 - Keterbatasan: batas ukuran input, header keamanan, dan rate limiting belum ada (Tahap 11); tes UI bersifat statis, bukan tes browser; server pengembangan Flask, bukan untuk produksi; format-on-save VS Code mengubah tata letak berkas HTML, JS, CSS, dan JSON (bentuk kanonik = isi repo; pagar jumlah baris tidak berlaku untuk jenis itu).
 
+## Rencana Tahap 11-1 (batas ukuran input; dikunci sebelum hasil; data TRAIN saja, hanya agregat)
+
+- Skrip src/ukur_panjang_train.py mengukur panjang body_text (jumlah karakter) di 7438 email train: median, p90, p95, p99, p99.9, maks, dan jumlah email di atas 20000/50000/100000/250000, per label dan total.
+- Aturan keputusan (dikunci): batas teks 100000 karakter diterima bila paling banyak 7 dari 7438 email train (0,1%) melebihinya. Bila lebih, batas dinaikkan ke 250000 (lalu 500000) pada angka pertama yang memenuhi aturan yang sama. MAX_CONTENT_LENGTH tetap sekitar 1 MB.
+- Prediksi (dikunci): median 800-3000 karakter; p99 10000-60000; jumlah di atas 100000 antara 0 dan 7 (aturan lolos pada 100000).
+- Catatan: panjang body_text hasil parser bukan teks yang ditempel pengguna, jadi ukuran ini penuntun, bukan bukti. Uji waktu nilai() pada teks sebesar batas dilakukan terpisah.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
