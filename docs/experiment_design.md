@@ -555,6 +555,13 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Prediksi (dikunci): median 800-3000 karakter; p99 10000-60000; jumlah di atas 100000 antara 0 dan 7 (aturan lolos pada 100000).
 - Catatan: panjang body_text hasil parser bukan teks yang ditempel pengguna, jadi ukuran ini penuntun, bukan bukti. Uji waktu nilai() pada teks sebesar batas dilakukan terpisah.
 
+## Hasil Tahap 11-1 (panjang body_text di data TRAIN; batas ukuran input)
+
+- Panjang (karakter), semua train n=7438: median 1104, p90 2965, p95 4515, p99 14739, p99.9 70255, maks 163477. Per label (median / maks): ham 974 / 163477, spam 1080 / 125706, phishing 1274 / 17434.
+- Email di atas 20000/50000/100000/250000: semua 34/10/2/0 (ham 16/5/1/0; spam 18/5/1/0; phishing 0/0/0/0).
+- Keputusan menurut aturan terkunci: batas teks 100000 karakter diterima (2 dari 7438 = 0,027% melebihinya; aturan: paling banyak 7); MAX_CONTENT_LENGTH sekitar 1 MB. Batas 20000 akan menolak 34 email train (0,46%). Tiga prediksi terkunci (median, p99, jumlah di atas 100000) cocok.
+- Keterbatasan: ukuran dari body_text hasil parser pada data 2002-2007, bukan teks tempelan pengguna; ekor panjang hanya pada ham/spam (konsisten dengan sumber milis; hipotesis, tidak diuji); 2 email train di atas batas akan ditolak (disengaja).
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
@@ -576,3 +583,4 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Tahap 9-3c: gerbang v2 (persentil ke-5) ditambahkan sebagai aturan terpisah setelah gerbang terkunci 9-3 terbukti degenerate; pilihan persentil adalah keputusan pengguna dan dinyatakan eksploratif. Prediksi P1 sampai P5 cocok semuanya.
 - Tahap 9-4: jumlah baris samples/contoh_fiktif.json diprediksi 14 tetapi tersimpan 50 (format ulang editor); prediksi pita E08 meleset (MEDIUM, bukan LOW); dugaan "teks Indonesia ditandai phishing" tidak terbukti pada 3 contoh; Tahap 9 ditutup.
 - Tahap 10: prediksi jumlah baris berkas HTML, JS, dan CSS (33/103/27) meleset karena format-on-save (menjadi 56/170/145); dua tes UI dibuat ulang agar tidak peka format (frasa dinormalkan spasi dan huruf kecil, kunci objek dengan atau tanpa kutip) setelah merah di mesin pengguna, tanpa mengubah aturan eksperimen apa pun.
+- Tahap 11-1: prediksi insertions blok Rencana (6) meleset (7: satu baris kosong tambahan dari Enter ekstra setelah menempel); rantai berhenti pada pagar dan dilanjutkan setelah memeriksa git diff --cached; hasil panjang body_text sesuai tiga prediksi terkunci.
