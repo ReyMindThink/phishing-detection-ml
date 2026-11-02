@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Penilai Risiko Email - demo penelitian</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Penilai Risiko Email <span class="tag">demo penelitian</span></h1>
+      <section class="peringatan" role="note">
+        <p>
+          <strong>Baca dulu.</strong> Model dilatih pada email berbahasa Inggris
+          tahun 2002-2007 dan bukan alat keamanan utama. Hasil "RISIKO RENDAH"
+          atau "TIDAK DAPAT DINILAI" tidak berarti email itu bersih: periksa
+          manual. Jangan menempel email pribadi atau rahasia.
+        </p>
+      </section>
+      <section>
+        <label for="teks"
+          >Teks email (diproses dan ditampilkan sebagai teks biasa; tautan tidak
+          dibuka)</label
+        >
+        <textarea
+          id="teks"
+          rows="10"
+          spellcheck="false"
+          placeholder="Tempel teks email di sini, atau muat contoh fiktif di bawah."
+        ></textarea>
+        <div class="aksi">
+          <button id="analisis" type="button">Analisis</button>
+          <button class="contoh" type="button" data-id="E09">
+            Muat contoh penipuan (fiktif)
+          </button>
+          <button class="contoh" type="button" data-id="E08">
+            Muat contoh sah (fiktif)
+          </button>
+          <button class="contoh" type="button" data-id="E11">
+            Muat contoh keterbatasan (fiktif)
+          </button>
+        </div>
+        <p id="info-contoh" class="kecil"></p>
+      </section>
+      <section id="hasil" aria-live="polite"></section>
+      <footer>
+        <p class="kecil">
+          Skor adalah skor model, bukan probabilitas. Pita HIGH, MEDIUM, dan LOW
+          bersifat indikatif dan diturunkan dari data latih. Proyek edukasi:
+          batas klaim ada di README dan docs/experiment_design.md.
+        </p>
+      </footer>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

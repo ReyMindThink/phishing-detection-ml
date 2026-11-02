@@ -1,0 +1,145 @@
+:root {
+  --bg: #fafafa;
+  --fg: #1d2330;
+  --kartu: #ffffff;
+  --garis: #c9ced8;
+  --muted: #5a6275;
+  --tinggi: #b3261e;
+  --sedang: #b26a00;
+  --rendah: #4a5a78;
+  --tdn: #6b4aa0;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171f;
+    --fg: #e6e9f0;
+    --kartu: #1c212c;
+    --garis: #3a4152;
+    --muted: #a2a9ba;
+    --tinggi: #ff8a80;
+    --sedang: #ffb74d;
+    --rendah: #9db0d6;
+    --tdn: #c3a6f0;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font:
+    16px/1.5 system-ui,
+    sans-serif;
+}
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+h1 {
+  font-size: 1.5rem;
+  margin: 0 0 1rem;
+}
+h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1rem;
+}
+.tag {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+  border: 1px solid var(--garis);
+  border-radius: 4px;
+  padding: 0 0.4rem;
+}
+.peringatan {
+  border: 2px solid var(--sedang);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  background: var(--kartu);
+}
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+textarea {
+  width: 100%;
+  font:
+    14px/1.4 ui-monospace,
+    monospace;
+  padding: 0.5rem;
+  color: var(--fg);
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+}
+.aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+button {
+  font: inherit;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--garis);
+  border-radius: 6px;
+  background: var(--kartu);
+  color: var(--fg);
+  cursor: pointer;
+}
+button#analisis {
+  background: var(--fg);
+  color: var(--bg);
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.kartu {
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  border-left-width: 8px;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+}
+.status-HIGH {
+  border-left-color: var(--tinggi);
+}
+.status-MEDIUM {
+  border-left-color: var(--sedang);
+}
+.status-LOW {
+  border-left-color: var(--rendah);
+}
+.status-TIDAK-DAPAT-DINILAI {
+  border-left-color: var(--tdn);
+  border-left-style: dashed;
+}
+.kata {
+  display: inline-block;
+  vertical-align: top;
+  width: 48%;
+  min-width: 220px;
+}
+.kata ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.kecil {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.galat {
+  color: var(--tinggi);
+  font-weight: 600;
+}

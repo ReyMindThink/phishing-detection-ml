@@ -28,6 +28,10 @@ def buat_app(penilai=None, samples_path=SAMPLES, path_manifest=MANIFEST, path_at
     def samples():
         return jsonify(contoh)
 
+    @app.get("/")
+    def beranda():
+        return app.send_static_file("index.html")
+
     @app.post("/analyze")
     def analyze():
         data = request.get_json(silent=True)
