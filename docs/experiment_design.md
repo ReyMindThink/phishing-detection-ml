@@ -535,6 +535,12 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Temuan: kata pendorong "bukan phishing" didominasi perlengkapan milis dan nama sumber (list, mailman, listinfo, xent, newsisfree, spamassassin; HIPOTESIS penanda sumber, konsisten dengan kelas = sumber); teks kosong atau tanpa kata dikenal dinilai 0,5158 (> ambang 0,5040) sehingga gerbang wajib; gerbang persentil ke-1 degenerate (N_MIN=1, C_MIN=0) dan v2 dirancang setelahnya (eksploratif); pita MEDIUM lebar sehingga label harus "perlu diperiksa"; email sah bertema bank dan akun bisa HIGH (E11).
 - Hutang untuk Tahap 10-12: ekstrak nilai_satu dari src/uji_fiktif.py menjadi modul penilai dengan tes (merah dulu); pesan "tidak dapat dinilai" = periksa manual, bukan aman; peringatan bahasa dan data 2002-2007; kontribusi kata per prediksi (koefisien x TF-IDF) belum dibuat; pita dari OOF model tunggal (skala ensemble bergeser, 8-0); skor 289 phishing train yang gagal gerbang v2 belum diperiksa; hipotesis yang belum diuji tetap berlabel hipotesis.
 
+## Rencana Tahap 10a-2 (kontrol regresi penilai terhadap Hasil 9-4; dikunci sebelum dijalankan; bukan evaluasi)
+
+- Skrip src/cek_penilai_fiktif.py (python -m src.cek_penilai_fiktif) menilai 12 contoh fiktif lewat src/penilai.py (model beku via muat_penilai, SHA256 diperiksa) dan membandingkan dengan Hasil 9-4: jumlah token dan kata dikenal, STATUS, pita, putusan model, dan skor ham/spam/phishing (2 desimal).
+- Prediksi (dikunci): SEMUA 12 baris identik dengan Hasil 9-4 (E01-E03 TIDAK DAPAT DINILAI dengan skor 0,31/0,17/0,52; E08 MEDIUM; E09 HIGH; E10 LOW; E11 HIGH; E04-E07 dan E12 TIDAK DAPAT DINILAI), dan bagian gerbang_v2 terbaca N_MIN=16, C_MIN=0,77. Bila ada selisih, penilai atau skrip yang salah dan diperbaiki; Hasil 9-4 tidak diubah.
+- Batas: ini kontrol regresi (modul baru vs hasil lama), bukan evaluasi atau bukti kinerja; tidak ada data train atau test yang disentuh.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
