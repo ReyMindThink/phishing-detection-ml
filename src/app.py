@@ -13,12 +13,15 @@ from src.penilai import ATURAN, muat_penilai
 SAMPLES = "samples/contoh_fiktif.json"
 CATATAN = ("Skor adalah skor model, BUKAN probabilitas. TIDAK DAPAT DINILAI berarti periksa manual; tidak ada dasar "
            "untuk menyatakan email itu bersih. Model dilatih pada email berbahasa Inggris 2002-2007 dan bukan alat keamanan utama.")
+BATAS_TEKS = 100_000  # karakter; Hasil 11-1 (2 dari 7438 email train melebihinya)
+MAKS_BYTE = 1_250_000  # byte badan; 100.000 karakter di luar BMP bisa 12 byte per karakter pada JSON ber-escape
 
 
 def buat_app(penilai=None, samples_path=SAMPLES, path_manifest=MANIFEST, path_aturan=ATURAN):
     pen = penilai if penilai is not None else muat_penilai(path_manifest, path_aturan)
     contoh = json.loads(Path(samples_path).read_text(encoding="utf-8"))
     app = Flask(__name__)
+    app.config["MAX_CONTENT_LENGTH"] = MAKS_BYTE
 
     @app.get("/health")
     def health():
@@ -37,9 +40,16 @@ def buat_app(penilai=None, samples_path=SAMPLES, path_manifest=MANIFEST, path_at
         data = request.get_json(silent=True)
         if not isinstance(data, dict) or not isinstance(data.get("teks"), str):
             return jsonify(error='Kirim JSON {"teks": "..."} dengan teks berupa string.'), 400
+        if len(data["teks"]) > BATAS_TEKS:
+            return jsonify(error=f"Teks terlalu panjang (maksimal {BATAS_TEKS} karakter)."), 413
         hasil = pen.nilai(data["teks"])
         hasil["catatan"] = CATATAN
         return jsonify(hasil)
+
+    @app.errorhandler(Exception)
+    def galat_tak_terduga(e):
+        app.logger.error("galat tak terduga (%s) di %s", type(e).__name__, request.path)
+        return jsonify(error="Internal Server Error"), 500
 
     @app.errorhandler(HTTPException)
     def galat(e):
