@@ -1,0 +1,11 @@
+-r requirements.txt
+# Tes (pandas dibutuhkan karena test_penilai mengimpor src.derive_app_rules)
+iniconfig==2.3.1
+packaging==26.3
+pandas==3.0.6
+pluggy==1.6.0
+Pygments==2.21.0
+pytest==9.1.1
+python-dateutil==2.9.0.post0
+six==1.17.0
+tzdata==2026.5
