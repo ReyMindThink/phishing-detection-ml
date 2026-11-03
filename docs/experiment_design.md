@@ -562,6 +562,12 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Keputusan menurut aturan terkunci: batas teks 100000 karakter diterima (2 dari 7438 = 0,027% melebihinya; aturan: paling banyak 7); MAX_CONTENT_LENGTH sekitar 1 MB. Batas 20000 akan menolak 34 email train (0,46%). Tiga prediksi terkunci (median, p99, jumlah di atas 100000) cocok.
 - Keterbatasan: ukuran dari body_text hasil parser pada data 2002-2007, bukan teks tempelan pengguna; ekor panjang hanya pada ham/spam (konsisten dengan sumber milis; hipotesis, tidak diuji); 2 email train di atas batas akan ditolak (disengaja).
 
+## Rencana Tahap 11-2 (waktu nilai() pada teks sebesar batas; dikunci sebelum hasil)
+
+- Skrip src/ukur_waktu_nilai.py memanggil POST /analyze (model asli, test_client) dengan 7 teks FIKTIF/sintetis sepanjang tepat 100000 karakter (E09 diulang, seluruh kosakata model, kata pendek, satu token panjang, spasi saja, "http://" beruntun, "hxxp://x " bersela), 3 kali per kasus; hanya waktu yang dicetak.
+- Aturan keputusan (dikunci): batas 100000 dipertahankan bila waktu maksimum semua kasus <= 2,0 detik dan semua status 200. Bila ada kasus > 2,0 detik, keputusan batas dibuka kembali (pertanyaan keputusan terpisah); batas tidak diturunkan diam-diam.
+- Prediksi (dikunci): semua kasus <= 2,0 detik (perkiraan 0,1-1,0 detik); kasus paling lambat = "kosakata penuh" (paling banyak fitur tak-nol); "http beruntun" dan "hxxp bersela" < 0,5 detik (tidak ada ReDoS). Keterbatasan: satu laptop, satu proses, tanpa beban paralel; waktu bergantung perangkat keras.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
