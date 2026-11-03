@@ -568,6 +568,12 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Aturan keputusan (dikunci): batas 100000 dipertahankan bila waktu maksimum semua kasus <= 2,0 detik dan semua status 200. Bila ada kasus > 2,0 detik, keputusan batas dibuka kembali (pertanyaan keputusan terpisah); batas tidak diturunkan diam-diam.
 - Prediksi (dikunci): semua kasus <= 2,0 detik (perkiraan 0,1-1,0 detik); kasus paling lambat = "kosakata penuh" (paling banyak fitur tak-nol); "http beruntun" dan "hxxp bersela" < 0,5 detik (tidak ada ReDoS). Keterbatasan: satu laptop, satu proses, tanpa beban paralel; waktu bergantung perangkat keras.
 
+## Hasil Tahap 11-2 (waktu nilai() pada teks 100000 karakter; model asli, test_client)
+
+- Waktu per permintaan (min-maks, 3 ulangan; semua status 200): E09 diulang 0,083-0,094 s; kosakata penuh 0,167-0,215 s; kata pendek abc 0,107-0,123 s; satu token panjang 0,042-0,050 s; spasi saja 0,058-0,073 s; http beruntun 0,091-0,108 s; hxxp bersela 0,076-0,092 s.
+- Keputusan menurut aturan terkunci: batas 100000 karakter dipertahankan (maksimum 0,215 s <= 2,0 s; semua status 200). Prediksi terkunci cocok (semua <= 2,0 s; paling lambat = kosakata penuh; http dan hxxp < 0,5 s); perkiraan kasar 0,1-1,0 s meleset ke arah lebih cepat.
+- Keterbatasan: satu laptop, satu proses, test_client (tanpa jaringan dan tanpa server HTTP), tanpa beban paralel; tidak membuktikan ketahanan terhadap banyak permintaan sekaligus (rate limiting: butir 5 Tahap 11, didokumentasikan untuk Tahap 15).
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
@@ -590,3 +596,4 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Tahap 9-4: jumlah baris samples/contoh_fiktif.json diprediksi 14 tetapi tersimpan 50 (format ulang editor); prediksi pita E08 meleset (MEDIUM, bukan LOW); dugaan "teks Indonesia ditandai phishing" tidak terbukti pada 3 contoh; Tahap 9 ditutup.
 - Tahap 10: prediksi jumlah baris berkas HTML, JS, dan CSS (33/103/27) meleset karena format-on-save (menjadi 56/170/145); dua tes UI dibuat ulang agar tidak peka format (frasa dinormalkan spasi dan huruf kecil, kunci objek dengan atau tanpa kutip) setelah merah di mesin pengguna, tanpa mengubah aturan eksperimen apa pun.
 - Tahap 11-1: prediksi insertions blok Rencana (6) meleset (7: satu baris kosong tambahan dari Enter ekstra setelah menempel); rantai berhenti pada pagar dan dilanjutkan setelah memeriksa git diff --cached; hasil panjang body_text sesuai tiga prediksi terkunci.
+- Tahap 11: klaim "1 MB cukup untuk 100000 karakter" keliru untuk karakter di luar BMP pada JSON ber-escape (sekitar 1,2 MB), jadi MAKS_BYTE = 1250000 dan dijaga tes; tes byte pertama tidak bisa merah (batas karakter menangkap lebih dulu) dan diperbaiki lewat mutasi; header keamanan: nama dan nilai diverifikasi dari dokumentasi, perilaku di browser diperiksa manual.
