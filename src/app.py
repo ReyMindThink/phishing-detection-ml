@@ -15,6 +15,12 @@ CATATAN = ("Skor adalah skor model, BUKAN probabilitas. TIDAK DAPAT DINILAI bera
            "untuk menyatakan email itu bersih. Model dilatih pada email berbahasa Inggris 2002-2007 dan bukan alat keamanan utama.")
 BATAS_TEKS = 100_000  # karakter; Hasil 11-1 (2 dari 7438 email train melebihinya)
 MAKS_BYTE = 1_250_000  # byte badan; 100.000 karakter di luar BMP bisa 12 byte per karakter pada JSON ber-escape
+HEADER_AMAN = {
+    "Content-Security-Policy": "default-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "X-Frame-Options": "DENY",
+}
 
 
 def buat_app(penilai=None, samples_path=SAMPLES, path_manifest=MANIFEST, path_aturan=ATURAN):
@@ -45,6 +51,13 @@ def buat_app(penilai=None, samples_path=SAMPLES, path_manifest=MANIFEST, path_at
         hasil = pen.nilai(data["teks"])
         hasil["catatan"] = CATATAN
         return jsonify(hasil)
+
+    @app.after_request
+    def pasang_header(resp):
+        resp.headers.update(HEADER_AMAN)
+        if request.path == "/analyze":
+            resp.headers["Cache-Control"] = "no-store"
+        return resp
 
     @app.errorhandler(Exception)
     def galat_tak_terduga(e):
