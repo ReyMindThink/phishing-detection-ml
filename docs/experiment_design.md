@@ -574,6 +574,13 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Keputusan menurut aturan terkunci: batas 100000 karakter dipertahankan (maksimum 0,215 s <= 2,0 s; semua status 200). Prediksi terkunci cocok (semua <= 2,0 s; paling lambat = kosakata penuh; http dan hxxp < 0,5 s); perkiraan kasar 0,1-1,0 s meleset ke arah lebih cepat.
 - Keterbatasan: satu laptop, satu proses, test_client (tanpa jaringan dan tanpa server HTTP), tanpa beban paralel; tidak membuktikan ketahanan terhadap banyak permintaan sekaligus (rate limiting: butir 5 Tahap 11, didokumentasikan untuk Tahap 15).
 
+## Hasil Tahap 12 (tes kasus tepi; model sintetis, tanpa models/ dan data/)
+
+- Ditambah tests/test_kasus_tepi.py: 16 kasus (parser: header Content-Type rusak, kosong, charset aneh, pesan tanpa header dan pesan kosong; URL Unicode dan punycode; penilai: email tanpa link, teks Indonesia fiktif E04-E06 ditahan gerbang pada model sintetis; aplikasi: 7 masukan aneh [surrogat tunggal, NUL, lebar-nol, RTL, emoji, CR/LF, tab] dijawab 200). Total tes 95. Mutasi sengaja (encode UTF-8 di nilai, tautan www dihitung, host Unicode ditandai punycode, tipe konten dinormalkan) membuat tes merah.
+- Temuan 1 (KARAKTERISASI; dikunci tes \*\_perilaku_saat_ini): header Content-Type rusak ("text/html content-transfer-encoding: 8bit") disimpan utuh sebagai tipe konten; body_text menjadi kosong dan tautan HTML tidak terhitung. HIPOTESIS (belum dicek ke data): sebagian dari 84 body kosong di 8-4 berasal dari sini. Tidak diperbaiki (ekstraksi dan fitur dibeku); masuk Limitations.
+- Temuan 2 (KARAKTERISASI): host Unicode mentah dihitung sebagai tautan tetapi tidak ditandai punycode (hanya "xn--"); fitur ini bukan masukan model dan tidak dipakai aplikasi, jadi masuk Limitations sebagai catatan diagnostik. Koreksi: probe awal membuat pesan dari str dan salah mengira host terbaca literal; pesan dari bytes UTF-8 (seperti mbox) membuktikan temuan, dan tes kini punya baris kontrol.
+- Keterbatasan: tes sintetis hanya menguji mekanisme (gerbang mengukur kosakata model, bukan bahasa); hasil model asli pada E04-E06 tetap dari src/cek_penilai_fiktif.py (bukan bagian pytest); temuan 1 dan 2 diuji pada pesan fiktif, bukan pada data.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
