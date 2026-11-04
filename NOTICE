@@ -1,0 +1,24 @@
+# NOTICE
+
+Kode dan dokumen repo ini berlisensi MIT (lihat LICENSE). Data di bawah TIDAK disertakan di repo ini dan memiliki syarat sendiri. Repo hanya memuat angka agregat turunan.
+
+URL ditulis defanged (hxxps = https, [.] = titik).
+
+## MeAJOR (uji eksternal)
+
+Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Merged email Assets from Joint Open-source Repositories (Version 2.0) [Dataset]. Zenodo. hxxps://doi[.]org/10[.]5281/zenodo[.]18471483
+Lisensi: CC BY 4.0 (diverifikasi di halaman Zenodo pada 4 Nov 2026). Dipakai hanya untuk evaluasi; tidak ada teks MeAJOR di repo.
+
+## Nazario Phishing Corpus (klasik: latih dan uji internal; 2015-2025: hanya uji)
+
+José Nazario, hxxps://monkey[.]org/~jose/phishing/
+Lisensi: CC BY 4.0 menurut README sumber (dicatat saat pengambilan; BELUM diverifikasi ulang pada 4 Nov 2026). Tidak ada email di repo.
+
+## SpamAssassin Public Corpus (ham dan spam)
+
+hxxps://spamassassin[.]apache[.]org/old/publiccorpus/
+Tidak ada lisensi formal; hak cipta teks pesan tetap milik pengirim asli (lihat SOURCES.md). Tidak ada email di repo.
+
+## Model
+
+Berkas model yang dirilis dilatih dari data di atas (bobot dan kosakata turunan). Syarat tiap sumber tetap berlaku; rincian dan batas klaim ada di SOURCES.md.
