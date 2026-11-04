@@ -2,10 +2,12 @@
 
 Catatan asal, lisensi, dan bias setiap sumber data. Data mentah TIDAK disertakan di repo ini.
 
+URL ditulis defanged (hxxps = https, [.] = titik): pulihkan dulu bila ingin membuka, dan jangan membuka berkas korpus phishing di browser atau klien email biasa.
+
 ## 1. SpamAssassin Public Corpus
 
-- **URL halaman:** https://spamassassin.apache.org/old/publiccorpus/readme.html
-- **URL direktori file:** https://spamassassin.apache.org/old/publiccorpus/
+- **URL halaman:** hxxps://spamassassin[.]apache[.]org/old/publiccorpus/readme[.]html
+- **URL direktori file:** hxxps://spamassassin[.]apache[.]org/old/publiccorpus/
 - **Tanggal unduh:** 2026-10-12
 - **Peran dalam proyek:** kelas ham dan spam
 
@@ -30,8 +32,8 @@ bukan bahwa isinya identik dengan yang dipublikasikan.
 
 ### Lisensi
 
-Tidak ada lisensi formal di halaman. Readme menyatakan hak cipta teks email tetap milik pengirim asli.
-Konsekuensi: email mentah tidak di-commit ke repo.
+Tidak ada lisensi formal di README korpus. Teks README (dicek 4 Nov 2026 lewat salinan di arsip milis 2002 dan 2011 serta skrip dataset pihak ketiga; halaman aslinya tidak dibuka langsung) menyatakan: pesan berasal dari forum publik, dikirim ke penyusun dengan sepengetahuan bahwa boleh dipublikasikan, ditulis penyusun, atau buletin situs berita publik; hak cipta teks pesan tetap milik pengirim asli.
+Konsekuensi: email mentah tidak di-commit ke repo, dan repo ini TIDAK menyatakan lisensi apa pun atas data ini.
 
 ### Catatan bias
 
@@ -42,17 +44,17 @@ Konsekuensi: email mentah tidak di-commit ke repo.
 
 ## 2. MeAJOR (Merged email Assets from Joint Open-source Repositories)
 
-- **URL halaman:** https://zenodo.org/records/18471483
+- **URL halaman:** hxxps://zenodo[.]org/records/18471483
 - **DOI:** 10.5281/zenodo.18471483 (Versi 2.0, Februari 2026)
 - **Penyusun:** Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (GECAD, ISEP, Politeknik Porto)
 - **Tanggal unduh:** 2026-10-12
 - **Lisensi:** Creative Commons Attribution 4.0 International (CC BY 4.0). Wajib mencantumkan atribusi.
 - **Peran dalam proyek:** HANYA uji eksternal false positive (ham/spam asing), tidak dipakai untuk latih. Diputuskan di Tahap 3.
-- **Temuan verifikasi:** kolom source hanya berisi trec5/trec6/trec7 (tidak ada Nazario), dan label 1 setara spam TREC. Jadi tidak ada phishing menurut definisi proyek, dan recall tidak bisa diukur dengan data ini. Duplikat terhadap SpamAssassin harus dicek sebelum dipakai.
+- **Temuan verifikasi (Tahap 8-3; rincian di docs/experiment_design.md):** kolom source hanya berisi trec5/trec6/trec7, tetapi 97 baris berlabel 1 mirip (cosine >= 0,9) dengan phishing Nazario di data latih. Jadi kolom source tidak dapat dipercaya, dan "MeAJOR tidak berisi phishing" TIDAK boleh ditulis. Karena label 1 bercampur (kemungkinan spam dan penipuan), recall phishing tidak diukur dengan data ini.
 
 ### Sitasi
 
-Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Merged email Assets from Joint Open-source Repositories (Version 2.0) [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.18471483
+Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Merged email Assets from Joint Open-source Repositories (Version 2.0) [Dataset]. Zenodo. hxxps://doi[.]org/10[.]5281/zenodo[.]18471483
 
 ### File
 
@@ -71,11 +73,11 @@ Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Me
 - Label 1 kemungkinan mencampur spam dan penipuan (Nigerian Fraud), padahal definisi proyek: spam bukan phishing.
 - Header mentah dan URL asli hilang (dianonimkan), sehingga fitur header/URL mentah tidak sebanding dengan SpamAssassin.
 - Kemungkinan tumpang tindih dengan korpus era yang sama (misalnya TREC vs SpamAssassin). Dicek dengan hash isi.
-- Nazario berasal dari kotak masuk pribadi satu orang, bukan sampel acak dunia nyata (dari hasil pencarian, belum diverifikasi ke sumber asli).
+- Nazario berasal dari kotak masuk pribadi satu orang, bukan sampel acak dunia nyata (didukung makalah arXiv 2408.08967 "Phishing Codebook"; README asli tidak dibuka ulang).
 
 ## 3. Nazario Phishing Corpus
 
-- **URL halaman:** https://monkey.org/~jose/phishing/
+- **URL halaman:** hxxps://monkey[.]org/~jose/phishing/
 - **Penyusun:** José Nazario (koleksi dari inbox pribadi, diklasifikasi manual)
 - **Tanggal akses:** 2026-10-13
 - **Lisensi:** CC BY 4.0 (menurut README.txt penyusun). Wajib atribusi.
@@ -84,7 +86,14 @@ Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Me
 ### File yang dipakai
 
 phishing0.mbox, phishing1.mbox, phishing2.mbox, phishing3.mbox, 20051114.mbox.
-Tidak dipakai: private-phishing4.mbox (tidak dijelaskan di README) dan file modern phishing-2015 s.d. 2025 (dicadangkan sebagai uji generalisasi terpisah, belum diunduh).
+Tidak dipakai: private-phishing4.mbox (tidak dijelaskan di README).
+
+### File modern (HANYA uji generalisasi, tidak untuk latih)
+
+- 11 file phishing-2015 sampai phishing-2025; lisensi CC BY 4.0 menurut README sumber (dicatat saat pengambilan, tidak dibuka ulang 4 Nov 2026). Wajib atribusi.
+- Pemeriksaan HEAD sebelum unduh: 11 file HTTP 200, Content-Length 8815568 sampai 18769863 byte. Ekstraksi hanya di Docker (--rm) dengan src/extract_nazario_modern.py (komit 09531e5).
+- Hasil: 3466 email (2015 307, 2016 494, 2017 325, 2018 288, 2019 243, 2020 158, 2021 101, 2022 247, 2023 419, 2024 403, 2025 481); 0 gagal; 84 body_text kosong. CSV 7898810 byte, diabaikan Git.
+- Tidak dicatat saat pengambilan (utang dokumentasi): hash berkas unduhan dan tanggal akses (mbox tidak disimpan). Tanggal komit 09531e5 hanya perkiraan kasar.
 
 ### Cara pengambilan (penting untuk keamanan)
 
