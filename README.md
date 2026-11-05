@@ -2,7 +2,7 @@
 
 Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishing berbasis teks (TF-IDF + regresi logistik), dan apa yang terjadi ketika angka yang tinggi diperiksa satu per satu. Hasil utamanya bukan modelnya, melainkan temuan tentang cara mengevaluasinya.
 
-> **Status:** model, tes, dan aplikasi demo lokal sudah selesai. Rilis model (berkas zip) belum terbit, jadi bagian "Cara menjalankan" baru memuat cara menjalankan tes.
+> **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Dokumen untuk merekonstruksi dataset dari sumber asli belum ada.
 > Proyek ini untuk tujuan **edukasi dan pengujian defensif**. Ini BUKAN filter email dan BUKAN jaminan keamanan. Jangan jadikan satu-satunya dasar menilai sebuah email.
 
 **Cara membaca penunjuk.** Setiap klaim berangka diikuti penunjuk seperti [Hasil 8-5] ke bagian bernama itu di [docs/experiment_design.md](docs/experiment_design.md) (judul lengkapnya "Hasil Tahap 8-5 ..."; [Kesimpulan 6] berarti "Kesimpulan Tahap 6"). Tiga label dipakai: **terkunci** (aturan dan prediksi ditulis dan dikomit sebelum hasil), **eksploratif** (disusun setelah melihat data, tidak membuktikan apa pun), dan **hipotesis** (belum diuji).
@@ -107,7 +107,9 @@ Data mentah tidak disertakan di repo ini. Tiga sumber dipakai: SpamAssassin Publ
 
 ## Cara menjalankan
 
-Terverifikasi dengan Python 3.14.3 (Windows, Git Bash) dan Python 3.14 di GitHub Actions. Mengunci versi paket persis di `requirements*.txt`.
+Terverifikasi dengan Python 3.14.3 (Windows, Git Bash) dan Python 3.14 di GitHub Actions. Versi paket dikunci persis di `requirements*.txt`, dan model terikat versi itu.
+
+**Menjalankan tes** (tanpa data dan tanpa model; tes memakai model sintetis [Hasil 13a]):
 
 ```bash
 python -m venv .venv
@@ -116,7 +118,17 @@ python -m pip install --only-binary=:all: -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Hasil yang diharapkan: 95 tes lolos tanpa data dan tanpa model, karena tes memakai model sintetis [Hasil 13a]. Aplikasi demo membutuhkan lima berkas model di `models/` dari rilis; rilis itu belum terbit, jadi langkah menjalankan aplikasi dan merekonstruksi dataset ditambahkan saat rilis dibuat.
+Hasil yang diharapkan: 95 tes lolos [Hasil 13a].
+
+**Menjalankan aplikasi demo** (butuh lima model dari rilis):
+
+1. Pasang paket runtime: `python -m pip install --only-binary=:all: -r requirements.txt`.
+2. Unduh `phishing-models-v1.zip` dari tab Releases repo ini (rilis v1.0.0).
+3. Periksa SHA256 zip sebelum diekstrak. Nilai yang benar: `24792390c0f2d86375014ac953ea5b1f98702373982a5ee09bb96d19adb58100` (Git Bash atau Linux: `sha256sum phishing-models-v1.zip`; PowerShell: `Get-FileHash -Algorithm SHA256 phishing-models-v1.zip`).
+4. Dari akar repo, ekstrak zip (membuat folder `models/`): `python -m zipfile -e phishing-models-v1.zip .`
+5. Periksa model: `python -m src.cek_penilai_fiktif` harus mencetak `KONTROL OK: 12 dari 12`. Lalu jalankan `python -m src.app` dan buka alamat 127.0.0.1 port 5000 di browser (hanya lokal; Ctrl+C untuk berhenti).
+
+Hash zip dan hash tiap model membuktikan INTEGRITAS (berkas sama dengan yang dirilis), BUKAN keamanan: format joblib adalah pickle, dan aplikasi memeriksa SHA256 setiap model terhadap [docs/model_manifest.json](docs/model_manifest.json) sebelum memuatnya. Pemeriksaan 12 contoh hanya dijalankan di Windows [Hasil 13a]. Langkah merekonstruksi dataset dari sumber asli belum didokumentasikan (docs/reproduce.md belum ada).
 
 ## Lisensi
 

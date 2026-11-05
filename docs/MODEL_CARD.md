@@ -59,7 +59,7 @@ Angka test tinggi konsisten dengan jalan pintas sumber (model yang hanya melihat
 
 ## Integritas, versi, dan cara memuat
 
-- Berkas: `models/fold0.joblib` sampai `fold4.joblib` (total 4998468 byte), dirilis sebagai satu zip lewat GitHub Release. Nilai SHA256 tiap model ada di [docs/model_manifest.json](model_manifest.json); awalan: `27ebc383021c`, `fbdcd509788d`, `0ca8193873bf`, `5844df5baa41`, `86f85db6e163`. Hash zip dicatat saat rilis dibuat.
+- Berkas: `models/fold0.joblib` sampai `fold4.joblib` (total 4998468 byte), dirilis sebagai satu zip lewat GitHub Release. Nilai SHA256 tiap model ada di [docs/model_manifest.json](model_manifest.json); awalan: `27ebc383021c`, `fbdcd509788d`, `0ca8193873bf`, `5844df5baa41`, `86f85db6e163`. Zip `phishing-models-v1.zip` (rilis v1.0.0, 2678249 byte) memiliki SHA256 `24792390c0f2d86375014ac953ea5b1f98702373982a5ee09bb96d19adb58100`.
 - Versi saat model dilatih: Python 3.14.3, scikit-learn 1.9.1, numpy 2.5.4, pandas 3.0.6, scipy 1.18.1 (manifest), joblib 1.6.0 (daftar paket). Model terikat versi persis ini [Hasil 13a].
 - Format joblib adalah pickle: memuat berkas yang diubah dapat menjalankan kode. Hash SHA256 membuktikan integritas (berkas sama dengan yang dirilis), BUKAN keamanan (berkas yang dirilis pun harus dipercaya).
 - Muat hanya lewat `src.frozen_model.muat_ensemble` (atau `src.penilai.muat_penilai` di aplikasi), yang memeriksa SHA256 sebelum `joblib.load`. Pada uji, satu byte yang diubah ditolak dengan galat "SHA256 tidak cocok" dan model tidak dimuat [Hasil 13a].
