@@ -80,7 +80,7 @@ Cardoso, F., Vitorino, J., Mendes, P., Maia, E., & Praça, I. (2026). MeAJOR: Me
 - **URL halaman:** hxxps://monkey[.]org/~jose/phishing/
 - **Penyusun:** José Nazario (koleksi dari inbox pribadi, diklasifikasi manual)
 - **Tanggal akses:** 2026-10-13
-- **Lisensi:** CC BY 4.0 (menurut README.txt penyusun). Wajib atribusi.
+- **Lisensi:** CC BY 4.0 (diverifikasi 5 Nov 2026: README.txt dan LICENSE.txt di halaman sumber, teks lengkap dibaca). README menyebut karya turunan dan pemakaian komersial diizinkan dengan atribusi. Wajib atribusi dan menyatakan perubahan.
 - **Peran dalam proyek:** kelas phishing (set klasik)
 
 ### File yang dipakai
@@ -90,7 +90,7 @@ Tidak dipakai: private-phishing4.mbox (tidak dijelaskan di README).
 
 ### File modern (HANYA uji generalisasi, tidak untuk latih)
 
-- 11 file phishing-2015 sampai phishing-2025; lisensi CC BY 4.0 menurut README sumber (dicatat saat pengambilan, tidak dibuka ulang 4 Nov 2026). Wajib atribusi.
+- 11 file phishing-2015 sampai phishing-2025; lisensi CC BY 4.0 (diverifikasi 5 Nov 2026 dari README.txt sumber; README itu berlaku untuk seluruh direktori dan tidak memisahkan file klasik dari modern). Wajib atribusi.
 - Pemeriksaan HEAD sebelum unduh: 11 file HTTP 200, Content-Length 8815568 sampai 18769863 byte. Ekstraksi hanya di Docker (--rm) dengan src/extract_nazario_modern.py (komit 09531e5).
 - Hasil: 3466 email (2015 307, 2016 494, 2017 325, 2018 288, 2019 243, 2020 158, 2021 101, 2022 247, 2023 419, 2024 403, 2025 481); 0 gagal; 84 body_text kosong. CSV 7898810 byte, diabaikan Git.
 - Tidak dicatat saat pengambilan (utang dokumentasi): hash berkas unduhan dan tanggal akses (mbox tidak disimpan). Tanggal komit 09531e5 hanya perkiraan kasar.
