@@ -43,6 +43,33 @@ Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishin
 
 Baca baris pertama sebagai batas atas, dan baris-baris sesudahnya sebagai seberapa cepat angka itu jatuh ketika merek, tahun, atau sumber berubah.
 
+## Contoh hasil
+
+Tiga dari 12 contoh fiktif ([samples/contoh_fiktif.json](samples/contoh_fiktif.json)), seperti tampil di aplikasi demo lokal. Ini demonstrasi perilaku aplikasi, bukan evaluasi model [Hasil 9-4]. Penggunaan dan batas model ada di [kartu model](docs/MODEL_CARD.md).
+
+![E09, contoh penipuan fiktif: RISIKO TINGGI, skor 1,00](docs/img/demo-e09-risiko-tinggi.png)
+
+![E08, contoh sah fiktif: PERLU DIPERIKSA, skor 0,34](docs/img/demo-e08-perlu-diperiksa.png)
+
+![E11, email sah bertema bank: RISIKO TINGGI, skor 0,89](docs/img/demo-e11-keterbatasan.png)
+
+Seluruh 12 contoh. "Kata dikenal / token" membandingkan kata yang ada di kosakata model dengan jumlah token; "Putusan model" adalah kelas pilihan model bila tidak ada gerbang [Hasil 9-4].
+
+| Contoh  | Kelompok                                        | Kata dikenal / token | Putusan model | Skor ham / spam / phishing | Status di aplikasi            |
+| ------- | ----------------------------------------------- | -------------------- | ------------- | -------------------------- | ----------------------------- |
+| E01-E03 | teks kosong, spasi saja, angka saja             | 0 / 0                | phishing      | 0,31 / 0,17 / 0,52         | TIDAK DAPAT DINILAI           |
+| E04     | Indonesia, sah                                  | 4 / 20               | ham           | 0,44 / 0,14 / 0,42         | TIDAK DAPAT DINILAI           |
+| E05     | Indonesia, penipuan fiktif                      | 4 / 23               | ham           | 0,51 / 0,13 / 0,36         | TIDAK DAPAT DINILAI           |
+| E06     | Indonesia campur Inggris                        | 5 / 20               | ham           | 0,29 / 0,26 / 0,46         | TIDAK DAPAT DINILAI           |
+| E07     | Inggris, sangat pendek                          | 4 / 4                | spam          | 0,24 / 0,26 / 0,50         | TIDAK DAPAT DINILAI           |
+| E08     | Inggris, sah (bergaya kantor)                   | 36 / 37              | ham           | 0,52 / 0,15 / 0,34         | PERLU DIPERIKSA (pita MEDIUM) |
+| E09     | Inggris, penipuan fiktif                        | 31 / 34              | phishing      | 0,00 / 0,00 / 1,00         | RISIKO TINGGI                 |
+| E10     | Inggris, spam fiktif                            | 30 / 32              | spam          | 0,02 / 0,96 / 0,02         | RISIKO RENDAH (pita LOW)      |
+| E11     | Inggris, sah bertema bank (contoh keterbatasan) | 29 / 29              | phishing      | 0,08 / 0,03 / 0,89         | RISIKO TINGGI                 |
+| E12     | Inggris, phishing fiktif pendek                 | 9 / 13               | ham           | 0,35 / 0,28 / 0,37         | TIDAK DAPAT DINILAI           |
+
+Delapan dari 12 contoh berstatus TIDAK DAPAT DINILAI, dan itu BUKAN aman. Tanpa gerbang, dua contoh phishing fiktif (E05 dan E12) diputus ham, dan teks kosong (E01-E03) diputus phishing [Hasil 9-4; Kesimpulan 8]. E11 menunjukkan arah sebaliknya: email sah diberi skor tinggi (hipotesis: kepekaan pada kosakata akun dan bank) [Hasil 10]. Daftar kata di aplikasi (tidak tampak di gambar) adalah bobot statistik, bukan sebab-akibat.
+
 ## Keterbatasan
 
 Klaim di proyek ini hanya berlaku pada data yang diuji, dan banyak butir di bawah adalah hipotesis yang belum diuji.
@@ -69,7 +96,7 @@ Klaim di proyek ini hanya berlaku pada data yang diuji, dan banyak butir di bawa
 **Aplikasi dan rekayasa**
 
 - Aplikasi hanya lokal: server pengembangan Flask, tanpa TLS, autentikasi, atau pembatasan laju; belum untuk diterbitkan publik [docs/security_checklist.md](docs/security_checklist.md).
-- Tes UI bersifat statis (bukan tes browser), dan butir 3b daftar centang (Console di bawah CSP, warna kartu) belum diperiksa manual [docs/security_checklist.md](docs/security_checklist.md).
+- Tes UI bersifat statis (bukan tes browser), dan pemeriksaan manual (Console di bawah CSP, warna kartu) hanya dilakukan sekali, di satu peramban (bawaan VS Code) tanpa mode gelap [docs/security_checklist.md](docs/security_checklist.md).
 - Parser tidak diperbaiki di rilis ini: header Content-Type rusak membuat isi kosong, host Unicode tidak ditandai punycode, tautan tanpa skema tidak dihitung [Hasil 12]. Daftar kata mendesak di UI dibuat manual dan tidak divalidasi [Hasil 10].
 - Hasil terverifikasi hanya di Windows (laptop penulis) dan runner Linux GitHub. Tag action memakai versi mayor (`@v7`) dan label `ubuntu-latest` dapat berubah [Hasil 13a].
 - Berkas model memakai joblib (format pickle): hash SHA256 membuktikan integritas, BUKAN keamanan. Muat hanya model dari rilis yang hash-nya dicocokkan.
