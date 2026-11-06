@@ -121,7 +121,7 @@ Klaim di proyek ini hanya berlaku pada data yang diuji, dan banyak butir di bawa
 
 ## Data dan atribusi
 
-Data mentah tidak disertakan di repo ini. Tiga sumber dipakai: SpamAssassin Public Corpus (ham dan spam; tanpa lisensi formal), Nazario Phishing Corpus (phishing; CC BY 4.0, diverifikasi dari README.txt dan LICENSE.txt sumber pada 5 Nov 2026), dan MeAJOR (hanya uji eksternal; CC BY 4.0, diverifikasi di halaman Zenodo pada 4 Nov 2026). Rincian ada di [NOTICE](NOTICE) dan [SOURCES.md](SOURCES.md). Email phishing adalah bahan berbahaya: berkas mbox hanya diekstraksi di container sekali pakai dan hanya CSV teks bersih yang keluar.
+Data mentah tidak disertakan di repo ini. Tiga sumber dipakai: SpamAssassin Public Corpus (ham dan spam; tanpa lisensi formal, hak cipta pesan tetap milik pengirim, diverifikasi dari readme sumber pada 5 Nov 2026), Nazario Phishing Corpus (phishing; CC BY 4.0, diverifikasi dari README.txt dan LICENSE.txt sumber pada 5 Nov 2026), dan MeAJOR (hanya uji eksternal; CC BY 4.0, diverifikasi di halaman Zenodo pada 4 Nov 2026). Rincian ada di [NOTICE](NOTICE) dan [SOURCES.md](SOURCES.md). Email phishing adalah bahan berbahaya: berkas mbox hanya diekstraksi di container sekali pakai dan hanya CSV teks bersih yang keluar.
 
 ## Cara menjalankan
 

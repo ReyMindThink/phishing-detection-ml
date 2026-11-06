@@ -10,6 +10,7 @@ URL ditulis defanged (hxxps = https, [.] = titik): pulihkan dulu bila ingin memb
 - **URL direktori file:** hxxps://spamassassin[.]apache[.]org/old/publiccorpus/
 - **Tanggal unduh:** 2026-10-12
 - **Peran dalam proyek:** kelas ham dan spam
+- **Lisensi dan syarat (diverifikasi 5 Nov 2026 dari readme sumber):** tidak ada lisensi formal. Hak cipta teks pesan tetap milik pengirim asli; pesan berasal dari forum publik, dikirim dengan sepengetahuan bahwa boleh dipublikasikan, atau buletin situs berita publik; korpus ditawarkan sebagai layanan bagi pengembang penyaring spam dan tidak boleh dikirim ke sistem email aktif. Repo ini tidak mengedarkan teks pesan.
 
 ### File yang dipakai (set 20030228)
 

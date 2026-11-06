@@ -17,7 +17,7 @@ Lisensi: CC BY 4.0 (diverifikasi 5 Nov 2026 dari README.txt dan LICENSE.txt sumb
 ## SpamAssassin Public Corpus (ham dan spam)
 
 hxxps://spamassassin[.]apache[.]org/old/publiccorpus/
-Tidak ada lisensi formal; hak cipta teks pesan tetap milik pengirim asli (lihat SOURCES.md). Tidak ada email di repo.
+Tidak ada lisensi formal (diverifikasi 5 Nov 2026 dari readme sumber): hak cipta teks pesan tetap milik pengirim asli, dan korpus ditawarkan untuk pengembangan dan pengujian penyaring spam. Tidak ada email di repo.
 
 ## Model
 
