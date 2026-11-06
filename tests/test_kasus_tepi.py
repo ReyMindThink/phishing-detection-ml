@@ -29,7 +29,7 @@ def test_content_type_rusak_mengosongkan_badan_perilaku_saat_ini():
 
 
 def test_host_unicode_mentah_tidak_ditandai_punycode_perilaku_saat_ini():
-    isi = "lihat http://xn--pple-43d.com/a dan http://\u0430pple.com/b".encode("utf-8")
+    isi = "lihat http://xn--pple-43d.example/a dan http://\u0430pple.example/b".encode("utf-8")
     pesan = message_from_bytes(b"From: a@example.com\nContent-Type: text/plain; charset=utf-8\n"
                                b"Content-Transfer-Encoding: 8bit\n\n" + isi)
     f = fitur_link(pesan)
@@ -48,7 +48,7 @@ def test_header_aneh_atau_pesan_kosong_tidak_error(pesan, teks):
 
 
 def test_hitung_link_url_unicode_punycode_dan_tautan_tanpa_skema():
-    teks = "http://xn--pple-43d.com http://\u0430pple.com hxxp://x.y example.com www.example.com"
+    teks = "http://xn--pple-43d.example http://\u0430pple.example hxxp://x.y example.com www.example.com"
     assert hitung_link(teks) == 3  # tautan tanpa skema TIDAK dihitung (keterbatasan yang diketahui)
 
 
