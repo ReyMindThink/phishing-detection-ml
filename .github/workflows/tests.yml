@@ -22,3 +22,17 @@ jobs:
         run: python -m pip check
       - name: Run tests
         run: python -m pytest -q
+      - name: Download model release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release download v1.0.0 --pattern phishing-models-v1.zip
+      - name: Verify release zip SHA256
+        env:
+          ZIP_SHA256: 24792390c0f2d86375014ac953ea5b1f98702373982a5ee09bb96d19adb58100
+        run: |
+          echo "${ZIP_SHA256}  phishing-models-v1.zip" | sha256sum --check --strict
+      - name: Extract models
+        run: python -m zipfile -e phishing-models-v1.zip .
+      - name: Check real model on fictional samples
+        run: python -m src.cek_penilai_fiktif
