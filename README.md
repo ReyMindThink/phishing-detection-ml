@@ -1,8 +1,12 @@
 # Phishing Detection ML: studi kasus evaluasi detektor phishing
 
+![status CI: tes sintetis di Linux](https://github.com/ReyMindThink/phishing-detection-ml/actions/workflows/tests.yml/badge.svg)
+
 Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishing berbasis teks (TF-IDF + regresi logistik), dan apa yang terjadi ketika angka yang tinggi diperiksa satu per satu. Hasil utamanya bukan modelnya, melainkan temuan tentang cara mengevaluasinya.
 
-> **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Dokumen untuk merekonstruksi dataset dari sumber asli belum ada.
+**English summary.** This repository is a case study in evaluating a text-based phishing email classifier (TF-IDF + logistic regression), not a ready-made detector. The headline scores on internal data are high, but the class is confounded with the data source, so the findings about how to evaluate matter more than the model [Kesimpulan 6].
+
+> **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Dokumen untuk merekonstruksi dataset dari sumber asli belum ada. Lencana CI di atas hanya menunjukkan bahwa tes dengan model sintetis lulus di Linux, bukan kualitas model [Hasil 13a].
 > Proyek ini untuk tujuan **edukasi dan pengujian defensif**. Ini BUKAN filter email dan BUKAN jaminan keamanan. Jangan jadikan satu-satunya dasar menilai sebuah email.
 
 **Cara membaca penunjuk.** Setiap klaim berangka diikuti penunjuk seperti [Hasil 8-5] ke bagian bernama itu di [docs/experiment_design.md](docs/experiment_design.md) (judul lengkapnya "Hasil Tahap 8-5 ..."; [Kesimpulan 6] berarti "Kesimpulan Tahap 6"). Tiga label dipakai: **terkunci** (aturan dan prediksi ditulis dan dikomit sebelum hasil), **eksploratif** (disusun setelah melihat data, tidak membuktikan apa pun), dan **hipotesis** (belum diuji).
@@ -13,6 +17,20 @@ Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishin
 - **Angka yang menggoda:** pada test internal (n=1860, dibuka sekali) recall phishing 0,9467 dan precision 0,9816 [Hasil 8-5].
 - **Mengapa angka itu tidak cukup:** semua phishing berasal dari satu sumber dan semua ham/spam dari sumber lain, jadi kelas = sumber. Model yang hanya melihat bentuk email (tanpa teks) sudah mencapai PR-AUC phishing 0,995 [Hasil Uji Artefak Awal]. Skor tinggi di sini tidak membuktikan kemampuan membedakan phishing di luar data ini.
 - **Yang saya lakukan:** menguji jalan pintas, kebocoran, data eksternal, dan perilaku aplikasi, dengan aturan dan prediksi dikunci sebelum hasil, dan mencatat prediksi yang meleset.
+
+## Peta repo
+
+- `src/app.py`, `src/penilai.py`, `src/static/`: aplikasi demo lokal (Flask, 127.0.0.1) dan logika penilaian; model dimuat hanya lewat `src/frozen_model.py`, yang memeriksa SHA256 sebelum memuat.
+- `src/extract_*.py`, `src/build_dataset.py`, `src/make_clean_dataset.py`, `src/make_splits.py`: membangun dataset dan pembagian data dari sumber asli (data tidak ada di repo).
+- `src/eda_*.py`, `src/cv_*.py`, `src/ablate_*.py`, `src/lofo_phishing.py`, `src/lobo_brand.py`, `src/eval_*.py`, `src/explain_global.py`: skrip analisis yang dibekukan; hasilnya dicatat di `docs/experiment_design.md`.
+- `src/freeze_model.py` dan `docs/model_manifest.json`: membekukan 5 model dan mencatat hash serta versi pustaka.
+- `docs/experiment_design.md`: catatan eksperimen berurutan (aturan, prediksi, hasil, koreksi); semua penunjuk di README mengarah ke sini.
+- `docs/MODEL_CARD.md` dan `docs/security_checklist.md`: kartu model dan daftar centang keamanan aplikasi.
+- `docs/app_rules.json` dan `samples/contoh_fiktif.json`: aturan pita dan gerbang aplikasi, serta 12 contoh email fiktif.
+- `tests/`: tes pytest dengan model sintetis (tanpa data dan tanpa model asli).
+- `requirements*.txt` dan `.github/workflows/tests.yml`: dependensi terkunci (runtime, dev, analisis) dan CI.
+- `SOURCES.md`, `NOTICE`, `LICENSE`: asal data, atribusi, dan lisensi kode (MIT).
+- `data/` dan `models/` diabaikan Git: data mentah tidak ada di repo, dan model ada di tab Releases.
 
 ## Apa yang saya temukan
 
