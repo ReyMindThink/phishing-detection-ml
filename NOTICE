@@ -12,12 +12,12 @@ Lisensi: CC BY 4.0 (diverifikasi di halaman Zenodo pada 4 Nov 2026). Dipakai han
 ## Nazario Phishing Corpus (klasik: latih dan uji internal; 2015-2025: hanya uji)
 
 José Nazario, hxxps://monkey[.]org/~jose/phishing/
-Lisensi: CC BY 4.0 (diverifikasi 5 Nov 2026 dari README.txt dan LICENSE.txt sumber: karya turunan dan pemakaian komersial diizinkan dengan atribusi). Perubahan oleh repo ini: teks diekstraksi, lampiran dan HTML dibuang, model dilatih dari hasilnya. Tidak ada email di repo.
+Lisensi: CC BY 4.0 (diverifikasi 6 Nov 2026 dari README.txt dan LICENSE.txt sumber: karya turunan dan pemakaian komersial diizinkan dengan atribusi). Perubahan oleh repo ini: teks diekstraksi, lampiran dan HTML dibuang, model dilatih dari hasilnya. Tidak ada email di repo.
 
 ## SpamAssassin Public Corpus (ham dan spam)
 
 hxxps://spamassassin[.]apache[.]org/old/publiccorpus/
-Tidak ada lisensi formal (diverifikasi 5 Nov 2026 dari readme sumber): hak cipta teks pesan tetap milik pengirim asli, dan korpus ditawarkan untuk pengembangan dan pengujian penyaring spam. Tidak ada email di repo.
+Tidak ada lisensi formal (diverifikasi 6 Nov 2026 dari readme sumber): hak cipta teks pesan tetap milik pengirim asli, dan korpus ditawarkan untuk pengembangan dan pengujian penyaring spam. Tidak ada email di repo.
 
 ## Model
 
