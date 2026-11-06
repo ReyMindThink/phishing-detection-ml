@@ -612,6 +612,15 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Hasil: tes baru MERAH sebelum berkas ada (4 errors) dan HIJAU sesudahnya (99 passed); skrip: KONTROL OK 9298 baris, 4741 grup, sha_partisi a0edd8587f0fcc56, train dan test sama dengan angka di atas; ukuran 776497 byte (prediksi 770-790 KB cocok); tepat satu berkas .tsv terlacak.
 - Batas: daftar hanya menunjukkan pembagian per content_hash, bukan isi; tidak membuktikan dataset dapat dibangun ulang dari sumber; pembangunan ulang bergantung pada versi berkas sumber (hash isi harus cocok dengan daftar); CI Linux belum dilihat untuk komit ini.
 
+## Hasil Tahap 15 S5 (bukti model asli di Linux lewat CI; 6 Nov 2026; bukan evaluasi model)
+
+- Perubahan: .github/workflows/tests.yml (komit 9162994) menambah empat langkah setelah pytest: unduh phishing-models-v1.zip dari Release v1.0.0 dengan gh (tanpa aksi pihak ketiga baru dan tanpa URL mentah), periksa SHA256 zip dengan sha256sum --check --strict, ekstrak ke models/, lalu python -m src.cek_penilai_fiktif.
+- Hasil: CI run #19 pada 9162994 Success, 39 detik, semua langkah lulus. Skrip memakai assert, jadi satu contoh yang berbeda dari Hasil 9-4 membuat langkahnya gagal. Baris cetak KONTROL OK tidak disalin; kesimpulan 12 dari 12 berasal dari status langkah, bukan dari membaca log.
+- Runner: ISI_DARI_SET_UP_JOB. Anotasi run #19 menyebut label ubuntu-latest akan bermigrasi ke Ubuntu 26 mulai 19 Okt 2026 (dikutip dari anotasi; belum diverifikasi ke halaman runner-images).
+- Arti: model asli yang dirilis (hash sama) memberi 12 putusan fiktif yang sama di Windows dan di satu image Linux. Ini kontrol regresi lintas OS, BUKAN evaluasi kualitas model, bukan uji pada email nyata, dan bukan deployment.
+- Kopling: CI sekarang bergantung pada Release v1.0.0 (nama aset, tag, dan hash). Aset yang dihapus atau diganti membuat CI merah; itu disengaja. Bila Release diganti (v1.0.1), workflow diubah bersamaan. Pytest tetap jalan lebih dulu tanpa model.
+- Batas: satu run, satu image; label ubuntu-latest tidak dikunci; versi aksi checkout@v7 dan setup-python@v7 belum diverifikasi ke dokumen primer (hanya terbukti jalan). Tag baru tidak dibuat karena isi Release tidak berubah.
+
 ## Riwayat Perubahan
 
 - Tahap 4: rencana awal memakai sender_domain untuk semua kelas diubah menjadi hanya ham/spam, karena hasil eksperimen menunjukkan grup phishing raksasa (40,9%). Keputusan "sender_domain bukan fitur" tidak berubah.
@@ -645,3 +654,4 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Koreksi tanggal (6 Nov 2026): butir Tahap 15 S1, S1b, dan S2 menulis 5 Nov 2026, tetapi komit b614806, f2cb8de, dan f55b0b8 bertanggal 6 Nov 2026 menurut git log dan date lokal; tanggal verifikasi lisensi di SOURCES.md, NOTICE, dan README diperbaiki menjadi 6 Nov 2026, sedangkan butir S1, S1b, dan S2 di atas tidak ditimpa.
 - Koreksi urutan (6 Nov 2026): komit Rencana Tahap 15 S3 terlewat (skrip dan daftar dikomit di a2760f1 tanpa blok Rencana); blok Hasil Tahap 15 S3 mencatat urutan sebenarnya, dan blok Rencana tidak ditulis surut.
 - Tahap 15 (S4, 6 Nov 2026): docs/reproduce.md ditambahkan (langkah rekonstruksi, angka kontrol, skrip yang jangan dijalankan ulang, batas; BELUM diuji end-to-end dari nol oleh orang lain; angka diambil dari kode dan dokumen ini, bukan dijalankan ulang); README diperbarui (status, 99 tes, tautan, Peta repo); tidak ada klaim hasil baru. Keputusan terkunci tetap.
+- Tahap 15 (S5, 6 Nov 2026): CI diperluas dengan pemeriksaan model asli; tiga klaim README yang jadi usang (alt lencana, kalimat status, kalimat "hanya di Windows") diperbarui; tidak ada klaim hasil model baru.

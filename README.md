@@ -1,12 +1,12 @@
 # Phishing Detection ML: studi kasus evaluasi detektor phishing
 
-![status CI: tes sintetis di Linux](https://github.com/ReyMindThink/phishing-detection-ml/actions/workflows/tests.yml/badge.svg)
+![status CI: tes dan pemeriksaan model asli di Linux](https://github.com/ReyMindThink/phishing-detection-ml/actions/workflows/tests.yml/badge.svg)
 
 Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishing berbasis teks (TF-IDF + regresi logistik), dan apa yang terjadi ketika angka yang tinggi diperiksa satu per satu. Hasil utamanya bukan modelnya, melainkan temuan tentang cara mengevaluasinya.
 
 **English summary.** This repository is a case study in evaluating a text-based phishing email classifier (TF-IDF + logistic regression), not a ready-made detector. The headline scores on internal data are high, but the class is confounded with the data source, so the findings about how to evaluate matter more than the model [Kesimpulan 6].
 
-> **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Panduan merekonstruksi dataset dari sumber asli ada di `docs/reproduce.md` (belum diuji end-to-end dari nol oleh orang lain). Lencana CI di atas hanya menunjukkan bahwa tes dengan model sintetis lulus di Linux, bukan kualitas model [Hasil 13a].
+> **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Panduan merekonstruksi dataset dari sumber asli ada di `docs/reproduce.md` (belum diuji end-to-end dari nol oleh orang lain). Lencana CI di atas menunjukkan bahwa tes dengan model sintetis lulus dan model asli dari Release v1.0.0 mereproduksi 12 contoh fiktif di Linux, bukan kualitas model [Hasil 13a] [Hasil Tahap 15 S5].
 > Proyek ini untuk tujuan **edukasi dan pengujian defensif**. Ini BUKAN filter email dan BUKAN jaminan keamanan. Jangan jadikan satu-satunya dasar menilai sebuah email.
 
 **Cara membaca penunjuk.** Setiap klaim berangka diikuti penunjuk seperti [Hasil 8-5] ke bagian bernama itu di [docs/experiment_design.md](docs/experiment_design.md) (judul lengkapnya "Hasil Tahap 8-5 ..."; [Kesimpulan 6] berarti "Kesimpulan Tahap 6"). Tiga label dipakai: **terkunci** (aturan dan prediksi ditulis dan dikomit sebelum hasil), **eksploratif** (disusun setelah melihat data, tidak membuktikan apa pun), dan **hipotesis** (belum diuji).
@@ -147,7 +147,7 @@ Hasil yang diharapkan: 99 tes lolos [Hasil Tahap 15 S3].
 4. Dari akar repo, ekstrak zip (membuat folder `models/`): `python -m zipfile -e phishing-models-v1.zip .`
 5. Periksa model: `python -m src.cek_penilai_fiktif` harus mencetak `KONTROL OK: 12 dari 12`. Lalu jalankan `python -m src.app` dan buka alamat 127.0.0.1 port 5000 di browser (hanya lokal; Ctrl+C untuk berhenti).
 
-Hash zip dan hash tiap model membuktikan INTEGRITAS (berkas sama dengan yang dirilis), BUKAN keamanan: format joblib adalah pickle, dan aplikasi memeriksa SHA256 setiap model terhadap [docs/model_manifest.json](docs/model_manifest.json) sebelum memuatnya. Pemeriksaan 12 contoh hanya dijalankan di Windows [Hasil 13a]. Langkah merekonstruksi dataset dari sumber asli ada di [docs/reproduce.md](docs/reproduce.md) dan belum diuji end-to-end dari nol oleh orang lain.
+Hash zip dan hash tiap model membuktikan INTEGRITAS (berkas sama dengan yang dirilis), BUKAN keamanan: format joblib adalah pickle, dan aplikasi memeriksa SHA256 setiap model terhadap [docs/model_manifest.json](docs/model_manifest.json) sebelum memuatnya. Pemeriksaan 12 contoh dijalankan di Windows (laptop penulis) dan di runner Linux GitHub lewat CI [Hasil Tahap 15 S5]. Langkah merekonstruksi dataset dari sumber asli ada di [docs/reproduce.md](docs/reproduce.md) dan belum diuji end-to-end dari nol oleh orang lain.
 
 ## Lisensi
 
