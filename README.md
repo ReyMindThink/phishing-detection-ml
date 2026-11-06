@@ -6,7 +6,7 @@ Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishin
 
 **English summary.** This repository is a case study in evaluating a text-based phishing email classifier (TF-IDF + logistic regression), not a ready-made detector. The headline scores on internal data are high, but the class is confounded with the data source, so the findings about how to evaluate matter more than the model [Kesimpulan 6].
 
-> **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Dokumen untuk merekonstruksi dataset dari sumber asli belum ada. Lencana CI di atas hanya menunjukkan bahwa tes dengan model sintetis lulus di Linux, bukan kualitas model [Hasil 13a].
+> **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Panduan merekonstruksi dataset dari sumber asli ada di `docs/reproduce.md` (belum diuji end-to-end dari nol oleh orang lain). Lencana CI di atas hanya menunjukkan bahwa tes dengan model sintetis lulus di Linux, bukan kualitas model [Hasil 13a].
 > Proyek ini untuk tujuan **edukasi dan pengujian defensif**. Ini BUKAN filter email dan BUKAN jaminan keamanan. Jangan jadikan satu-satunya dasar menilai sebuah email.
 
 **Cara membaca penunjuk.** Setiap klaim berangka diikuti penunjuk seperti [Hasil 8-5] ke bagian bernama itu di [docs/experiment_design.md](docs/experiment_design.md) (judul lengkapnya "Hasil Tahap 8-5 ..."; [Kesimpulan 6] berarti "Kesimpulan Tahap 6"). Tiga label dipakai: **terkunci** (aturan dan prediksi ditulis dan dikomit sebelum hasil), **eksploratif** (disusun setelah melihat data, tidak membuktikan apa pun), dan **hipotesis** (belum diuji).
@@ -25,6 +25,7 @@ Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishin
 - `src/eda_*.py`, `src/cv_*.py`, `src/ablate_*.py`, `src/lofo_phishing.py`, `src/lobo_brand.py`, `src/eval_*.py`, `src/explain_global.py`: skrip analisis yang dibekukan; hasilnya dicatat di `docs/experiment_design.md`.
 - `src/freeze_model.py` dan `docs/model_manifest.json`: membekukan 5 model dan mencatat hash serta versi pustaka.
 - `docs/experiment_design.md`: catatan eksperimen berurutan (aturan, prediksi, hasil, koreksi); semua penunjuk di README mengarah ke sini.
+- `docs/reproduce.md`, `docs/split_list.tsv`, dan `src/export_split_list.py`: langkah merekonstruksi dataset dan daftar pembagian data (hash, label, grup, bagian; tanpa isi email).
 - `docs/MODEL_CARD.md` dan `docs/security_checklist.md`: kartu model dan daftar centang keamanan aplikasi.
 - `docs/app_rules.json` dan `samples/contoh_fiktif.json`: aturan pita dan gerbang aplikasi, serta 12 contoh email fiktif.
 - `tests/`: tes pytest dengan model sintetis (tanpa data dan tanpa model asli).
@@ -136,7 +137,7 @@ python -m pip install --only-binary=:all: -r requirements-dev.txt
 python -m pytest -q
 ```
 
-Hasil yang diharapkan: 95 tes lolos [Hasil 13a].
+Hasil yang diharapkan: 99 tes lolos [Hasil Tahap 15 S3].
 
 **Menjalankan aplikasi demo** (butuh lima model dari rilis):
 
@@ -146,7 +147,7 @@ Hasil yang diharapkan: 95 tes lolos [Hasil 13a].
 4. Dari akar repo, ekstrak zip (membuat folder `models/`): `python -m zipfile -e phishing-models-v1.zip .`
 5. Periksa model: `python -m src.cek_penilai_fiktif` harus mencetak `KONTROL OK: 12 dari 12`. Lalu jalankan `python -m src.app` dan buka alamat 127.0.0.1 port 5000 di browser (hanya lokal; Ctrl+C untuk berhenti).
 
-Hash zip dan hash tiap model membuktikan INTEGRITAS (berkas sama dengan yang dirilis), BUKAN keamanan: format joblib adalah pickle, dan aplikasi memeriksa SHA256 setiap model terhadap [docs/model_manifest.json](docs/model_manifest.json) sebelum memuatnya. Pemeriksaan 12 contoh hanya dijalankan di Windows [Hasil 13a]. Langkah merekonstruksi dataset dari sumber asli belum didokumentasikan (docs/reproduce.md belum ada).
+Hash zip dan hash tiap model membuktikan INTEGRITAS (berkas sama dengan yang dirilis), BUKAN keamanan: format joblib adalah pickle, dan aplikasi memeriksa SHA256 setiap model terhadap [docs/model_manifest.json](docs/model_manifest.json) sebelum memuatnya. Pemeriksaan 12 contoh hanya dijalankan di Windows [Hasil 13a]. Langkah merekonstruksi dataset dari sumber asli ada di [docs/reproduce.md](docs/reproduce.md) dan belum diuji end-to-end dari nol oleh orang lain.
 
 ## Lisensi
 
