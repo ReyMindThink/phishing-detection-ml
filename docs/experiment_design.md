@@ -628,7 +628,8 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Hasil uji lokal (Docker Desktop, Windows 11): build selesai (sekitar 135 detik pada build pertama); container berjalan; /health mengembalikan n_model 5, artinya kelima model dimuat setelah lolos pemeriksaan SHA256 manifes; docker ps menampilkan port 127.0.0.1:5000->5000.
 - Prediksi (ditulis sebelum uji): Dockerfile 14 baris, .dockerignore 12 baris, /health n_model 5, port hanya 127.0.0.1: cocok semua.
 - Uji tambahan (sesudah komit 78cbc8f): python -m src.cek_penilai_fiktif di dalam container (model dipasang hanya baca) mencetak KONTROL OK 12 dari 12 contoh identik dengan Hasil 9-4 (gerbang v2 N_MIN 16, C_MIN 0.77); harapan yang ditulis sebelum uji cocok.
-- Tidak diuji: tampilan di browser; build di CI; image tidak dipublikasikan ke registry; digest image dasar tidak dikunci (tag python:3.14-slim bergeser seiring waktu).
+- Tidak diuji: tampilan di browser; build di CI; image tidak dipublikasikan ke registry.
+- Pengerasan (14 Nov 2026): FROM python:3.14-slim dikunci ke digest sha256:9aaa474097d0 (lengkap di Dockerfile) agar build bisa diulang persis sama; konsekuensi: patch keamanan image dasar tidak otomatis dan harus diperbarui manual.
 - Batas: server pengembangan Flask, tanpa autentikasi dan pembatasan laju; bukan layanan; bukan evaluasi kualitas model.
 
 ## Riwayat Perubahan
@@ -670,3 +671,4 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Tahap 15 (pengerasan CI, 14 Nov 2026): aksi checkout dan setup-python dikunci ke SHA komit (checkout v7.0.1, setup-python v7.1.0) dengan komentar tag; pembaruan versi kini manual; tidak ada klaim hasil model baru.
 - Tahap 15 (deployment, 14 Nov 2026): Dockerfile dan .dockerignore ditambahkan untuk demo lokal; README mendapat bagian Docker; tidak ada klaim hasil model baru.
 - Tahap 15 (deployment, 14 Nov 2026): Hasil deployment diperbarui setelah uji tambahan 12 contoh fiktif di dalam container (12 dari 12); tidak ada klaim hasil model baru.
+- Tahap 15 (pengerasan, 14 Nov 2026): digest image dasar Docker dikunci; ringkasan bahasa Inggris di README diperpanjang (butir berpenunjuk); tidak ada klaim hasil model baru.

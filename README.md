@@ -6,6 +6,20 @@ Proyek ini bertanya satu hal: seberapa jujur kita bisa mengukur detektor phishin
 
 **English summary.** This repository is a case study in evaluating a text-based phishing email classifier (TF-IDF + logistic regression), not a ready-made detector. The headline scores on internal data are high, but the class is confounded with the data source, so the findings about how to evaluate matter more than the model [Kesimpulan 6].
 
+The key points, in brief. The full record is in Indonesian in [docs/experiment_design.md](docs/experiment_design.md); bracketed pointers such as [Hasil 8-5] name its sections (for example 'Hasil Tahap 8-5 ...').
+
+- **What was built:** a three-class classifier (ham, spam, phishing) over email body text: the average of five TF-IDF + logistic regression models (C=1) with a fixed phishing threshold of about 0.504, chosen from a recall target of 0.93 on training data [Kesimpulan 7; Hasil 8-5]. A local demo app shows a score, a risk band and a 'cannot be assessed' status.
+- **The tempting number:** on the internal test set (n=1860, opened once) phishing recall is 0.9467 and precision 0.9816 [Hasil 8-5].
+- **Why it is not enough:** all phishing emails come from one source and all ham/spam from other sources, so class = source. A model that sees only the shape of the email (no text) already reaches a phishing PR-AUC of 0.995 [Hasil Uji Artefak Awal]. A high score here does not show that the model can tell phishing apart outside this data.
+- **Leakage by brand or template:** for three bank domains (209 emails in one phishing source file), out-of-fold recall is 0.943 but 0.129 when that file is held out [Kesimpulan 6]; holding out three banks together gives a recall of 0.245 [Hasil 7-4]. Random cross-validation is therefore optimistic for brands the model has already seen.
+- **Ablation with a random control:** removing the 40 top-ranked words lowers phishing PR-AUC from 0.9941 to 0.9914, while the largest drop from removing the same number of random words is 0.0001 [Kesimpulan 9]. The ranking barely changes, so the cues look redundant; this neither supports nor refutes the source shortcut, and my prediction of 'no difference from random' missed for this condition (exploratory) [Hasil 9-2].
+- **Outside the internal data:** recall on modern phishing emails is about 0.79 at the frozen threshold [Hasil 8-4-2].
+- **Base rate:** at realistic prevalence precision drops; indicative values (computed, not measured) are 0.486 at 1% and 0.831 at 5% prevalence, with a false positive rate of 1.0% [Kesimpulan 8].
+- **Input gate:** empty or unrecognisable text scores 0.5158, above the 0.5040 threshold, so the app refuses to score inputs with fewer than 16 known words or with coverage (known words over all words) below 0.77. The gate passes 92.89% of training emails and was designed after seeing the data (exploratory) [Hasil 9-3c; Kesimpulan 9]. 'Cannot be assessed' means check manually, not safe.
+- **Not calibrated, not a service:** scores are averages of model outputs, not calibrated probabilities. Hash checks prove integrity (the files match the release), not safety, because the model format is pickle. The demo has no authentication or rate limit [docs/MODEL_CARD.md].
+- **Reproducibility:** 99 tests run in CI, which also downloads the released model and checks 12 fictional examples on Linux (ubuntu-24.04) [Hasil Tahap 15 S5]; the demo also runs in Docker, published to localhost only [Hasil Tahap 15 deployment]. Limit: the guide for rebuilding the dataset ([docs/reproduce.md](docs/reproduce.md)) has not yet been tested end-to-end by anyone else.
+- **Data and licences:** raw data is not in the repository. The Nazario corpora and MeAJOR are CC BY 4.0; SpamAssassin has no formal licence, and the residual risk of redistributing derived data is noted, not legal advice [Hasil Tahap 15 penutupan; SOURCES.md].
+
 > **Status:** model, tes, dan aplikasi demo lokal sudah selesai; model dirilis sebagai satu berkas zip di tab Releases (hash di bagian "Cara menjalankan"). Panduan merekonstruksi dataset dari sumber asli ada di `docs/reproduce.md` (belum diuji end-to-end dari nol oleh orang lain). Lencana CI di atas menunjukkan bahwa tes dengan model sintetis lulus dan model asli dari Release v1.0.0 mereproduksi 12 contoh fiktif di Linux, bukan kualitas model [Hasil 13a] [Hasil Tahap 15 S5].
 > Proyek ini untuk tujuan **edukasi dan pengujian defensif**. Ini BUKAN filter email dan BUKAN jaminan keamanan. Jangan jadikan satu-satunya dasar menilai sebuah email.
 
@@ -151,7 +165,7 @@ Hash zip dan hash tiap model membuktikan INTEGRITAS (berkas sama dengan yang dir
 
 ### Demo lokal lewat Docker (opsional)
 
-Berkas `Dockerfile` menjalankan aplikasi demo yang sama di dalam container (`python:3.14-slim`). Model TIDAK ikut image: folder `models/` (hasil langkah 4 di atas) dipasang saat dijalankan, dan pemeriksaan SHA256 aplikasi tetap berlaku. Dari akar repo (Git Bash di Windows; `MSYS_NO_PATHCONV=1` mencegah Git Bash mengubah jalur):
+Berkas `Dockerfile` menjalankan aplikasi demo yang sama di dalam container (`python:3.14-slim`, dikunci ke digest). Model TIDAK ikut image: folder `models/` (hasil langkah 4 di atas) dipasang saat dijalankan, dan pemeriksaan SHA256 aplikasi tetap berlaku. Dari akar repo (Git Bash di Windows; `MSYS_NO_PATHCONV=1` mencegah Git Bash mengubah jalur):
 
 ```bash
 docker build -t phishing-demo .
