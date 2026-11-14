@@ -627,7 +627,8 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Keputusan: src/app.py mengunci 127.0.0.1, sehingga tidak terjangkau dari luar container. Dockerfile menjalankan buat_app() dengan host 0.0.0.0 HANYA di dalam container, dan port dipublikasikan ke laptop lewat 127.0.0.1. Klaim hanya lokal dan 99 tes tidak tersentuh. Risiko: menjalankan dengan -p tanpa awalan 127.0.0.1 membuka aplikasi ke jaringan; peringatannya ada di README.
 - Hasil uji lokal (Docker Desktop, Windows 11): build selesai (sekitar 135 detik pada build pertama); container berjalan; /health mengembalikan n_model 5, artinya kelima model dimuat setelah lolos pemeriksaan SHA256 manifes; docker ps menampilkan port 127.0.0.1:5000->5000.
 - Prediksi (ditulis sebelum uji): Dockerfile 14 baris, .dockerignore 12 baris, /health n_model 5, port hanya 127.0.0.1: cocok semua.
-- Tidak diuji: 12 contoh fiktif di dalam container; tampilan di browser; build di CI; image tidak dipublikasikan ke registry; digest image dasar tidak dikunci (tag python:3.14-slim bergeser seiring waktu).
+- Uji tambahan (sesudah komit 78cbc8f): python -m src.cek_penilai_fiktif di dalam container (model dipasang hanya baca) mencetak KONTROL OK 12 dari 12 contoh identik dengan Hasil 9-4 (gerbang v2 N_MIN 16, C_MIN 0.77); harapan yang ditulis sebelum uji cocok.
+- Tidak diuji: tampilan di browser; build di CI; image tidak dipublikasikan ke registry; digest image dasar tidak dikunci (tag python:3.14-slim bergeser seiring waktu).
 - Batas: server pengembangan Flask, tanpa autentikasi dan pembatasan laju; bukan layanan; bukan evaluasi kualitas model.
 
 ## Riwayat Perubahan
@@ -668,3 +669,4 @@ Dokumen ini ditulis SEBELUM melatih model apa pun. Perubahan setelah melihat has
 - Tahap 15 (S5 lanjutan, 13 Nov 2026): runner dikunci ke ubuntu-24.04 karena label ubuntu-latest bermigrasi bertahap ke 26.04 antara 19 Okt dan 19 Nov 2026 sehingga run bisa mendarat di image berbeda; run 19 dan 21 berjalan pada image yang tidak dicatat; versi aksi checkout@v7 dan setup-python@v7 diverifikasi ke halaman rilis resmi (checkout v7.0.1, setup-python v7.1.0); tidak ada klaim hasil model baru.
 - Tahap 15 (pengerasan CI, 14 Nov 2026): aksi checkout dan setup-python dikunci ke SHA komit (checkout v7.0.1, setup-python v7.1.0) dengan komentar tag; pembaruan versi kini manual; tidak ada klaim hasil model baru.
 - Tahap 15 (deployment, 14 Nov 2026): Dockerfile dan .dockerignore ditambahkan untuk demo lokal; README mendapat bagian Docker; tidak ada klaim hasil model baru.
+- Tahap 15 (deployment, 14 Nov 2026): Hasil deployment diperbarui setelah uji tambahan 12 contoh fiktif di dalam container (12 dari 12); tidak ada klaim hasil model baru.
