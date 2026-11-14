@@ -149,6 +149,17 @@ Hasil yang diharapkan: 99 tes lolos [Hasil Tahap 15 S3].
 
 Hash zip dan hash tiap model membuktikan INTEGRITAS (berkas sama dengan yang dirilis), BUKAN keamanan: format joblib adalah pickle, dan aplikasi memeriksa SHA256 setiap model terhadap [docs/model_manifest.json](docs/model_manifest.json) sebelum memuatnya. Pemeriksaan 12 contoh dijalankan di Windows (laptop penulis) dan di runner Linux GitHub lewat CI [Hasil Tahap 15 S5]. Langkah merekonstruksi dataset dari sumber asli ada di [docs/reproduce.md](docs/reproduce.md) dan belum diuji end-to-end dari nol oleh orang lain.
 
+### Demo lokal lewat Docker (opsional)
+
+Berkas `Dockerfile` menjalankan aplikasi demo yang sama di dalam container (`python:3.14-slim`). Model TIDAK ikut image: folder `models/` (hasil langkah 4 di atas) dipasang saat dijalankan, dan pemeriksaan SHA256 aplikasi tetap berlaku. Dari akar repo (Git Bash di Windows; `MSYS_NO_PATHCONV=1` mencegah Git Bash mengubah jalur):
+
+```bash
+docker build -t phishing-demo .
+MSYS_NO_PATHCONV=1 docker run --rm -p 127.0.0.1:5000:5000 -v "$(pwd -W)/models:/app/models:ro" phishing-demo
+```
+
+Di Linux atau macOS, ganti `$(pwd -W)` dengan `$(pwd)` dan hilangkan `MSYS_NO_PATHCONV=1`. Lalu buka alamat 127.0.0.1 port 5000 di browser. **Penting:** awalan `127.0.0.1:` pada `-p` wajib ada. Aplikasi mendengarkan 0.0.0.0 hanya di dalam container; tanpa awalan itu, port terbuka ke jaringan, padahal aplikasi ini demo tanpa autentikasi dan pembatasan laju (server pengembangan Flask), bukan layanan [Hasil Tahap 15 deployment].
+
 ## Lisensi
 
 MIT. Lihat berkas [LICENSE](LICENSE). Data memiliki syarat sendiri (lihat [NOTICE](NOTICE)).

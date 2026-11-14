@@ -1,0 +1,12 @@
+.git
+.github
+.venv
+data
+models
+tests
+.pytest_cache
+.vscode
+**/__pycache__
+semua_code.txt
+docs/img
+docs/split_list.tsv
